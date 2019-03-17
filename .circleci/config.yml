@@ -23,7 +23,7 @@ jobs:
             echo 'export IMAGE_TAG="${CIRCLE_PROJECT_REPONAME}:${BRANCH}"' >> $BASH_ENV
             echo 'export IMAGE_TAG_CLOUD="${DOCKER_USER}/${IMAGE_TAG}"' >> $BASH_ENV
 
-            git clone https://github.com/Sharpz7/sharpbot-discord/tree/${CIRCLE_BRANCH}
+            git clone -b ${CIRCLE_BRANCH} https://github.com/Sharpz7/sharpbot-discord.git
 
       - run:
           name: "Docker pull"
@@ -70,7 +70,7 @@ jobs:
             apk add --no-cache py-pip
             pip install docker-compose
 
-            git clone https://github.com/Sharpz7/sharpbot-discord/tree/${CIRCLE_BRANCH}
+            git clone -b ${CIRCLE_BRANCH} https://github.com/Sharpz7/sharpbot-discord.git
 
       - run:
           name: "Docker pull"
