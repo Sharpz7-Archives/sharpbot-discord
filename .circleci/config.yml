@@ -32,9 +32,8 @@ jobs:
             docker login -u $DOCKER_USER -p $DOCKER_PASS
 
             local_image="$(docker pull ${IMAGE_TAG_CLOUD})"
-            RESULT=$?
 
-            if [[ "$RESULT" != 0 ]]
+            if [ $? -ne 0 ]; then
             then
               docker tag ${IMAGE_TAG_CLOUD} ${IMAGE_TAG}
             else
