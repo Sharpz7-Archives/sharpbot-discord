@@ -1,0 +1,31 @@
+version: '3'
+services:
+  rdb:
+    hostname: "rdb"
+    image: rethinkdb:2.3.6
+    volumes:
+      - "./rethink_data:/data"
+    entrypoint: rethinkdb -n pdrdb -d /data --bind 0.0.0.0 --server-tag default --http-port 28010 --driver-port 28015
+    expose:
+      - "28015"
+    logging:
+        driver: none
+
+  sharpbot:
+    hostname: "sharpbot"
+    image: sharpbot-discord:latest
+    volumes:
+      - "./project:/project"
+    links:
+      - rdb:rdb
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+volumes:
+    rdb:
+    sharpbot:

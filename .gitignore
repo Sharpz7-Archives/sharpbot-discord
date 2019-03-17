@@ -1,0 +1,15 @@
+/.vscode
+/rethink_data
+/rethinkdb_data
+/backups
+.env
+/project/bot/__pycache__
+/project/bot/cogs/__pycache__
+/project/bot/database/__pycache__
+/project/bot/files/data.yml
+/project/bot/files/map.png
+/project/bot/files/classes.yml
+/project/bot/files/constants.yml
+/project/bot_testing/__pycache__
+/project/bot_testing/artifacts
+/project/bot_testing/tests/__pycache__

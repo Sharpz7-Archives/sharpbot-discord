@@ -1,0 +1,12 @@
+cogs:
+- bot.cogs.default
+- bot.cogs.move
+- bot.cogs.animal
+- bot.cogs.fight
+- bot.cogs.build
+- bot.cogs.place
+- bot.cogs.gather
+- bot.cogs.player
+- bot.cogs.owner
+- bot.cogs.error_handler
+- bot.cogs.boat

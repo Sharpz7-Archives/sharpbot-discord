@@ -1,0 +1,126 @@
+version: 2.1
+
+jobs:
+  lint:
+    docker:
+      - image: python:3.6.6-alpine3.8
+    steps:
+      - run: pip install flake8
+      - run: python -m flake8
+
+  build:
+    docker:
+      - image: docker:git
+
+    steps:
+      - setup_remote_docker
+
+      - run:
+          name: "Setup dependencies"
+          command: |
+            echo export BRANCH="${CIRCLE_BRANCH}" |sed 's#/#\-#g' >> $BASH_ENV
+            source $BASH_ENV
+            echo 'export IMAGE_TAG="${CIRCLE_PROJECT_REPONAME}:${BRANCH}"' >> $BASH_ENV
+            echo 'export IMAGE_TAG_CLOUD="${DOCKER_USER}/${IMAGE_TAG}"' >> $BASH_ENV
+
+            git clone https://github.com/Sharpz7/sharpbot-discord
+
+      - run:
+          name: "Docker pull"
+          command: |
+            source $BASH_ENV
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+            local_image="$(docker pull ${IMAGE_TAG_CLOUD})"
+            RESULT=$?
+
+            if [[ "$RESULT" != 0 ]]
+            then
+              docker tag ${IMAGE_TAG_CLOUD} ${IMAGE_TAG}
+            else
+              docker pull ${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:master
+              docker tag ${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:master ${IMAGE_TAG}
+            fi
+
+      - run:
+          name: "Docker build"
+          command: |
+            source $BASH_ENV
+            cd sharpbot-discord
+            docker build --cache-from ${IMAGE_TAG} -f "Dockerfile" -t ${IMAGE_TAG} .
+            docker tag ${IMAGE_TAG} $IMAGE_TAG_CLOUD
+
+      - run:
+          name: "Docker Push"
+          command: |
+            source $BASH_ENV
+            docker push ${IMAGE_TAG_CLOUD}
+
+  tests:
+    docker:
+      - image: docker:git
+
+    steps:
+      - setup_remote_docker
+
+      - run:
+          name: "Setup dependencies"
+          command: |
+            echo export BRANCH="${CIRCLE_BRANCH}" |sed 's#/#\-#g' >> $BASH_ENV
+            source $BASH_ENV
+            echo 'export IMAGE_TAG="${CIRCLE_PROJECT_REPONAME}:${BRANCH}"' >> $BASH_ENV
+            echo 'export IMAGE_TAG_CLOUD="${DOCKER_USER}/${IMAGE_TAG}"' >> $BASH_ENV
+
+            apk add --no-cache py-pip
+            pip install docker-compose
+
+            git clone https://github.com/Sharpz7/sharpbot-discord
+
+      - run:
+          name: "Docker pull"
+          command: |
+            source $BASH_ENV
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker pull ${IMAGE_TAG_CLOUD}
+            docker tag ${IMAGE_TAG_CLOUD} ${CIRCLE_PROJECT_REPONAME}:latest
+
+      - run:
+          name: "Prepare docker-compose"
+          command: |
+            source $BASH_ENV
+            cd ${CIRCLE_PROJECT_REPONAME}
+
+            docker volume create --name=project
+            docker create -v project:/project --name code alpine:3.8
+            docker cp ./project/. code:/project
+            touch .env
+            echo "CICD=TRUE" > .env
+
+      - run:
+          name: "Run tests"
+          command: |
+            source $BASH_ENV
+            cd ${CIRCLE_PROJECT_REPONAME}
+
+            docker-compose -f ".circleci/docker-compose.yml" up --abort-on-container-exit
+
+      - run:
+          name: "Upload failed artifacts"
+          command: docker cp code:/project/bot_testing/artifacts/. /artifacts
+          when: always
+
+      - store_artifacts:
+          path: /artifacts
+          destination: artifacts
+
+workflows:
+  version: 2
+  workflow:
+    jobs:
+      - lint
+
+      - build
+
+      - tests:
+          requires:
+           - build

@@ -1,0 +1,72 @@
+mats:
+    Wood:
+        name: Wood
+        rarity: 2
+        emoji: "EVERGREEN TREE"
+
+items:
+    Shield:
+        name: Shield
+        emoji: SHIELD
+        damage: 5
+        rarity: 3
+        utilities:
+            - findable
+
+creatures:
+    Cat:
+        name: Cat
+        emoji: CAT FACE
+        rarity: 3
+        damage: 3
+        health: 10
+        utilities:
+            - "findable"
+
+plants:
+    Acorn:
+        name: Acorn
+        emoji: CHESTNUT
+        rarity: 2
+        level_up_boost: 1
+
+boats:
+    Rowboat:
+        name: Rowboat
+        emoji: ROWBOAT
+        speed: 1
+
+trades:
+    wood_metal:
+        selling:
+            - [Wood, 5]
+        buying: [Wood, 1]
+        category: Lumberjack
+
+places:
+    Python Palace:
+        name: Python Palace
+        coords:
+            - 630
+            - 320
+        typev: CLASSICAL BUILDING
+
+building:
+    Shack:
+        name: Shack
+        emoji: TENT
+        hp: 500
+        mat: Wood
+
+
+
+
+
+
+
+
+
+
+
+
+
