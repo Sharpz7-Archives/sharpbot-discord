@@ -8,7 +8,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 from bot.classes import Place
 from bot.cogs import (animal, boat, build, default, fight, gather, move, owner,
-                      place, player)
+                      place, player, error_handler)
 from bot.constants import (FONT_FILE, MAP_FILE, SHORE, SHORE_COLOUR,
                            TEMPLATE_FILE, ARTIFACT_FOLDER)
 from bot.errors import TestFailError
@@ -90,13 +90,21 @@ class Bot:
 bot = Bot()
 
 
+class Command:
+    def __init__(self):
+        self.name = None
+
+    def __repr__(self):
+        return self.name
+
+
 class Context:
     """Copy of the `ctx` discord object"""
 
-    def __init__(self, fail_on=None):
+    def __init__(self):
         self.author = Author()
         self.guild = Guild()
-        self.command = True
+        self.command = Command()
         self.name = None
         self.invoked_subcommand = None
         self.stage = "default"
@@ -106,7 +114,6 @@ class Context:
 
     async def send(self, content=None, embed=None, file=None):
         """Prints and logs events"""
-
         if embed:
             await self.log(embed.title)
             await self.log(embed.description)
@@ -170,17 +177,17 @@ def cog_find(name):
 class Test:
     """Holds all of a tests data and objects"""
 
-    def __init__(self, name, commands, fail_on=None, nopost=False):
+    def __init__(self, name, commands, nopost=False):
         self.name = name
         self.commands = commands
         self.nopost = nopost
         self.artifacts = []
-        self.ctx = Context(fail_on)
 
     async def runner(self):
         """Runs all the tasks specified in the test_file"""
 
-        print(f"Using id {self.ctx.author.id}...\n")
+        self.ctx = Context()
+        print(f"Context Created with id {self.ctx.author.id}...\n")
 
         print("Runnning commands...")
 
@@ -200,6 +207,7 @@ class Test:
                 except ValueError:
                     options = None
                 func, options = await self.find_func(func_name, options, instance)
+                self.ctx.command.name = func.name
                 if func is None:
                     raise KeyError
 
@@ -219,14 +227,18 @@ class Test:
             failed = True
 
         except Exception as e:
-            print(f"\nThere was a unexpected error @ {self.ctx.stage}! ({type(e).__name__})\n")
-            traceback.print_exc()
-            print("Skipping to post.\n")
-            failed = True
+            handled = await error_handler.ErrorHandler.on_command_error(
+                instance(bot), self.ctx, e)
+            if not handled:
+                print(f"\nThere was a unexpected error @ {self.ctx.stage}! ({type(e).__name__})\n")
+                traceback.print_exc()
+                print("Skipping to post.\n")
+                failed = True
+            else:
+                failed = False
 
         if failed:
             await self.ctx.log(f"STAGE {self.ctx.stage} FAILED\n ({traceback.print_exc()})")
-            traceback.print_exc()
 
         # Removes and logs the players data
         # This will be stored in its artifact
@@ -234,8 +246,8 @@ class Test:
             print("Removing data-table...")
             self.ctx.stage = "Post"
             owner = cog_find("owner")
-            await owner.show.callback(bot, self.ctx)
-            await owner.purge.callback(bot, self.ctx)
+            await owner.show.callback(instance(bot), self.ctx)
+            await owner.purge.callback(instance(bot), self.ctx)
             print("DONE!\n")
 
         print("Dumping artifacts...")

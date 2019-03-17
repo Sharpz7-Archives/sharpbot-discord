@@ -22,4 +22,4 @@ start "" "%Rethink_Dir%\rethinkdb.exe"
 git pull
 CLS
 cd project
-pipenv run "py -3.6" run.py
+pipenv run "py -3.7" run.py
