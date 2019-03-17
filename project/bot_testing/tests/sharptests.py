@@ -41,9 +41,3 @@ def setup(file):
     ]
 
     file.create_test("default-test", commands=commands)
-
-    commands = [
-        ("gather", "/mine"),
-    ]
-
-    file.create_test("error-test", commands=commands)
