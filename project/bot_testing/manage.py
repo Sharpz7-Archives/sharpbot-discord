@@ -1,6 +1,5 @@
 import asyncio
 import os
-import time
 from importlib import import_module
 
 from bot.constants import ARTIFACT_FOLDER
@@ -26,7 +25,8 @@ def run_tests():
         pass
 
     # Loads all the tests
-    print("\nLoading tests...")
+    print("\nLoading tests for files...")
+    print("\n====================")
     for counter, item in enumerate(mods):
 
         # Imports the file
@@ -39,7 +39,8 @@ def run_tests():
             tests.append(test)
 
     # Creates a runner for the test
-    print("\nGetting ready to start tests...\n")
+    print("\nCompleted! Ready to start tests...")
+    print("\n====================")
     for counter, test in enumerate(tests):
         print(f"Running {test.name}...")
 
@@ -48,4 +49,3 @@ def run_tests():
         loop.run_until_complete(test.runner())
         print(f"Finished {test.name}! ({counter+1}/{len(tests)})")
         print("=============")
-        time.sleep(0.2)
