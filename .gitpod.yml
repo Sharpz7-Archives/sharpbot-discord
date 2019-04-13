@@ -1,9 +1,11 @@
 # Docs: https://www.gitpod.io/docs/41_Config_Gitpod_File
-image: docker:git
+image: sharp6292/sharpbot-discord:gitpod
 
 tasks:
-  - command: apk add --no-cache py-pip
-  - command: pip install docker-compose
-  - command: docker build -f "Dockerfile" .
-  - command: cd project
+  - command: echo "deb http://download.rethinkdb.com/apt `lsb_release -cs` main" | sudo tee /etc/apt/sources.list.d/rethinkdb.list
+  - command: wget -qO- https://download.rethinkdb.com/apt/pubkey.gpg | sudo apt-key add -
+  - command: sudo apt-get update
+  # rethinkdb -n pdrdb -d /data --bind 0.0.0.0 --server-tag default --http-port 28010 --driver-port 28015
+  - command: sudo apt-get install rethinkdb
+
 
