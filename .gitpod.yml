@@ -1,2 +1,9 @@
 # Docs: https://www.gitpod.io/docs/41_Config_Gitpod_File
-image: sharp6292/sharpbot-discord:master
+image: docker:git
+
+tasks:
+  - command: apk add --no-cache py-pip
+  - command: pip install docker-compose
+  - command: docker build -f "Dockerfile" .
+  - command: cd project
+

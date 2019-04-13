@@ -1,7 +1,4 @@
-FROM python:3.7.2-slim-stretch
-
-RUN apt update -y
-RUN apt install -y git
+FROM python:3.7.3-slim-stretch
 
 RUN pip install pipenv
 COPY Pipfile Pipfile
