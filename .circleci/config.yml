@@ -3,14 +3,14 @@ version: 2.1
 jobs:
   lint:
     docker:
-      - image: python:3.7.2-alpine3.8
+      - image: python:3.7.3-alpine3.8
     steps:
       - run: pip install flake8
       - run: python -m flake8
 
   build:
     docker:
-      - image: docker:git
+      - image: docker:18-git
 
     steps:
       - setup_remote_docker
@@ -56,7 +56,7 @@ jobs:
 
   tests:
     docker:
-      - image: docker:git
+      - image: sharp6292/docker-compose:latest
 
     steps:
       - setup_remote_docker
@@ -68,11 +68,6 @@ jobs:
             source $BASH_ENV
             echo 'export IMAGE_TAG="${CIRCLE_PROJECT_REPONAME}:${BRANCH}"' >> $BASH_ENV
             echo 'export IMAGE_TAG_CLOUD="${DOCKER_USER}/${IMAGE_TAG}"' >> $BASH_ENV
-
-            apk add curl
-            curl -L "https://github.com/docker/compose/releases/download/1.23.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-            chmod +x /usr/local/bin/docker-compose
-            docker-compose --version
 
             git clone -b ${CIRCLE_BRANCH} https://github.com/Sharpz7/sharpbot-discord.git
 

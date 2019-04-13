@@ -124,7 +124,12 @@ else
         echo "Not using dockerhub..."
     fi
 
-    docker build --cache-from "$img:latest" -t "$img:latest" .
+    if [[ "$SKIPBUILD" == "TRUE" ]]; then
+        echo "Skipping build..."
+    else
+        docker build --cache-from "$img:latest" -t "$img:latest" .
+    fi
+
     $SUDO docker-compose down
     $SUDO docker-compose up -d
     $SUDO docker-compose logs -f

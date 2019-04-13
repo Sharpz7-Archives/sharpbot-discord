@@ -123,7 +123,13 @@ else {
         "Not using dockerhub..."
     }
 
-    docker build --cache-from "${img}:latest" -t "${img}:latest" .
+    if ($d["SKIPBUILD"] -eq "TRUE") {
+        "Skipping build..."
+    }
+    else {
+        docker build --cache-from "${img}:latest" -t "${img}:latest" .
+    }
+
     docker-compose up -d
     docker-compose logs -f
 }
