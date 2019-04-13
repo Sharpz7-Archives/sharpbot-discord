@@ -118,7 +118,6 @@ else {
                 docker tag "${cloud_img}:master" "${img}:latest"
             }
         }
-        docker build --cache-from "${img}:latest" -t "${img}:latest" .
     }
     else {
         "Not using dockerhub..."

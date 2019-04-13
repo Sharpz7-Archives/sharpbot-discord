@@ -31,7 +31,7 @@ class OwnerCommands(commands.Cog):
 
     @commands.command(name='load', hidden=True)
     @commands.check(is_owner)
-    async def cog_load(self, ctx, name):
+    async def loadc(self, ctx, name):
         """Load a module.
         Remember to use dot path. e.g: cogs.owner"""
 
@@ -48,7 +48,7 @@ class OwnerCommands(commands.Cog):
 
     @commands.command(name='unload', hidden=True)
     @commands.check(is_owner)
-    async def cog_unload(self, ctx, name):
+    async def unloadc(self, ctx, name):
         """Unload a module.
         Remember to use dot path. e.g: cogs.owner"""
 
@@ -66,7 +66,7 @@ class OwnerCommands(commands.Cog):
 
     @commands.command(name='reload', aliases=["r"], hidden=True)
     @commands.check(is_owner)
-    async def cog_reload(self, ctx, name):
+    async def reloadc(self, ctx, name):
         """Reload a module.
         Remember to use dot path. e.g: cogs.owner"""
 
