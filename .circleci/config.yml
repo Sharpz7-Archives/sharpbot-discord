@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   lint:
     docker:
-      - image: python:3.6.6-alpine3.8
+      - image: python:3.7.3-alpine3.8
     steps:
       - run: pip install flake8
       - run: python -m flake8
@@ -20,6 +20,7 @@ jobs:
           command: |
             echo export BRANCH="${CIRCLE_BRANCH}" |sed 's#/#\-#g' >> $BASH_ENV
             source $BASH_ENV
+            echo ${BRANCH}
             echo 'export IMAGE_TAG="${CIRCLE_PROJECT_REPONAME}:${BRANCH}"' >> $BASH_ENV
             echo 'export IMAGE_TAG_CLOUD="${DOCKER_USER}/${IMAGE_TAG}"' >> $BASH_ENV
 
@@ -31,6 +32,7 @@ jobs:
             source $BASH_ENV
             docker login -u $DOCKER_USER -p $DOCKER_PASS
 
+            echo ${IMAGE_TAG_CLOUD}
             if [ $(docker pull ${IMAGE_TAG_CLOUD}) -e 0 ]; then
               docker tag ${IMAGE_TAG_CLOUD} ${IMAGE_TAG}
             else
@@ -67,6 +69,7 @@ jobs:
             echo 'export IMAGE_TAG="${CIRCLE_PROJECT_REPONAME}:${BRANCH}"' >> $BASH_ENV
             echo 'export IMAGE_TAG_CLOUD="${DOCKER_USER}/${IMAGE_TAG}"' >> $BASH_ENV
 
+            apk add curl
             curl -L https://github.com/docker/compose/releases/download/1.24.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
             chmod +x /usr/local/bin/docker-compose
 
