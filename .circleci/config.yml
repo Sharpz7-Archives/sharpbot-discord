@@ -20,7 +20,6 @@ jobs:
           command: |
             echo export BRANCH="${CIRCLE_BRANCH}" |sed 's#/#\-#g' >> $BASH_ENV
             source $BASH_ENV
-            echo ${BRANCH}
             echo 'export IMAGE_TAG="${CIRCLE_PROJECT_REPONAME}:${BRANCH}"' >> $BASH_ENV
             echo 'export IMAGE_TAG_CLOUD="${DOCKER_USER}/${IMAGE_TAG}"' >> $BASH_ENV
 
@@ -32,8 +31,8 @@ jobs:
             source $BASH_ENV
             docker login -u $DOCKER_USER -p $DOCKER_PASS
 
-            echo ${IMAGE_TAG_CLOUD}
-            if [ $(docker pull ${IMAGE_TAG_CLOUD}) -e 0 ]; then
+            test=$(docker pull $IMAGE_TAG_CLOUD)
+            if [[ $test -e 0 ]]; then
               docker tag ${IMAGE_TAG_CLOUD} ${IMAGE_TAG}
             else
               docker pull ${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:master
@@ -71,6 +70,7 @@ jobs:
 
             apk add curl
             curl -L https://github.com/docker/compose/releases/download/1.24.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+            sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
             chmod +x /usr/local/bin/docker-compose
 
             git clone -b ${CIRCLE_BRANCH} https://github.com/Sharpz7/sharpbot-discord.git
