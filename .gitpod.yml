@@ -2,10 +2,9 @@
 image: sharp6292/sharpbot-discord:gitpod
 
 tasks:
-  - command: echo "deb http://download.rethinkdb.com/apt `lsb_release -cs` main" | tee /etc/apt/sources.list.d/rethinkdb.list
-  - command: wget -qO- https://download.rethinkdb.com/apt/pubkey.gpg | apt-key add -
-  - command: apt-get update
-  # rethinkdb -n pdrdb -d /data --bind 0.0.0.0 --server-tag default --http-port 28010 --driver-port 28015
-  - command: apt-get install rethinkdb
+  - command: apt install wget procps libcurl3 libprotobuf10 -y
+  - command: wget "https://github.com/srh/rethinkdb/releases/download/v2.3.6.srh.1/rethinkdb_2.3.6.srh.1.0stretch_amd64.deb"
+  - command: dpkg -i rethinkdb_2.3.6.srh.1.0stretch_amd64.deb
+  - command: rethinkdb -n pdrdb -d /data --bind 0.0.0.0 --server-tag default --http-port 28010 --driver-port 28015
 
 
