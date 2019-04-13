@@ -32,10 +32,11 @@ jobs:
             docker login -u $DOCKER_USER -p $DOCKER_PASS
 
             echo ${IMAGE_TAG_CLOUD}
-            echo "$(docker pull ${IMAGE_TAG_CLOUD})"
+            $(docker pull ${IMAGE_TAG_CLOUD})
+            echo $?
             if [ "$(docker pull ${IMAGE_TAG_CLOUD})" == "0" ]; then
               docker tag ${IMAGE_TAG_CLOUD} ${IMAGE_TAG}
-            else;
+            else
               docker pull ${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:master
               docker tag ${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:master ${IMAGE_TAG}
             fi
