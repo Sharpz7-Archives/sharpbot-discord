@@ -67,6 +67,7 @@ jobs:
             echo 'export IMAGE_TAG="${CIRCLE_PROJECT_REPONAME}:${BRANCH}"' >> $BASH_ENV
             echo 'export IMAGE_TAG_CLOUD="${DOCKER_USER}/${IMAGE_TAG}"' >> $BASH_ENV
 
+            apk add py-pip python-dev libffi-dev openssl-dev gcc libc-dev make
             apk add --no-cache py-pip
             pip install docker-compose
 
