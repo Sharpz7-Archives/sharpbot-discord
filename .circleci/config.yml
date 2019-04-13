@@ -31,7 +31,7 @@ jobs:
             source $BASH_ENV
             docker login -u $DOCKER_USER -p $DOCKER_PASS
 
-            if [[ $(docker pull $IMAGE_TAG_CLOUD) -e 0 ]]; then
+            if [ $(docker pull $IMAGE_TAG_CLOUD) -eq 0 ]; then
               docker tag ${IMAGE_TAG_CLOUD} ${IMAGE_TAG}
             else
               docker pull ${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:master
@@ -69,7 +69,7 @@ jobs:
 
             apk add curl
             curl -L https://github.com/docker/compose/releases/download/1.24.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
-            sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+            ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
             chmod +x /usr/local/bin/docker-compose
 
             git clone -b ${CIRCLE_BRANCH} https://github.com/Sharpz7/sharpbot-discord.git
