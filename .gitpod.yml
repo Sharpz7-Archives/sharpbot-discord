@@ -1,4 +1,5 @@
 # Docs: https://www.gitpod.io/docs/41_Config_Gitpod_File
+# rethinkdb -n pdrdb -d /data --bind 0.0.0.0 --server-tag default --http-port 28010 --driver-port 28015
 image:
   file: .gitpod.Dockerfile
 
