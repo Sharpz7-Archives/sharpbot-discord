@@ -3,5 +3,5 @@ image:
   file: .gitpod.Dockerfile
 
 tasks:
-  - command: rethinkdb -n pdrdb -d /data --bind 0.0.0.0 --server-tag default --http-port 28010 --driver-port 28015
+  - command: rethinkdb -n pdrdb --bind 0.0.0.0 --server-tag default --http-port 28010 --driver-port 28015
 
