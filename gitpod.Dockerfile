@@ -8,4 +8,4 @@ RUN rethinkdb -n pdrdb -d /data --bind 0.0.0.0 --server-tag default --http-port 
 RUN pip install pipenv
 COPY Pipfile Pipfile
 COPY Pipfile.lock Pipfile.lock
-RUN init: pipenv install --system
+RUN pipenv install --system
