@@ -8,4 +8,4 @@ RUN dpkg -i rethinkdb_2.3.6.srh.1.0stretch_amd64.deb
 RUN pip install pipenv
 COPY Pipfile Pipfile
 COPY Pipfile.lock Pipfile.lock
-RUN pipenv install --system
+RUN pipenv install
