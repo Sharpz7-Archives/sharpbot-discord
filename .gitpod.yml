@@ -1,10 +1,13 @@
 # Docs: https://www.gitpod.io/docs/41_Config_Gitpod_File
-image: sharp6292/sharpbot-discord:gitpod
+image: python:3.7.3-slim-stretch
 
 tasks:
   - command: apt install wget procps libcurl3 libprotobuf10 -y
   - command: wget "https://github.com/srh/rethinkdb/releases/download/v2.3.6.srh.1/rethinkdb_2.3.6.srh.1.0stretch_amd64.deb"
   - command: dpkg -i rethinkdb_2.3.6.srh.1.0stretch_amd64.deb
   - command: rethinkdb -n pdrdb -d /data --bind 0.0.0.0 --server-tag default --http-port 28010 --driver-port 28015
+
+  - init: pip install pipenv
+  - init: pipenv install --system
 
 
