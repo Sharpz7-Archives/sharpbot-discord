@@ -4,4 +4,6 @@ image:
 
 tasks:
   - command: rethinkdb -n pdrdb --bind 0.0.0.0 --server-tag default --http-port 28010 --driver-port 28015
+  - command: pipenv install
+  - command: pipenv shell && cd project
 
