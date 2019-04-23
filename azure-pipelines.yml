@@ -4,7 +4,8 @@ variables:
   PIPENV_HIDE_EMOJIS: 1
   PIPENV_IGNORE_VIRTUALENVS: 1
   PIPENV_NOSPIN: 1
-  IMAGE_TAG: "$(Build.Repository.Name):$(Build.SourceBranchName)"
+  BRANCH_NAME: sharpbot-discord
+  IMAGE_TAG: "$(BRANCH_NAME):$(Build.SourceBranchName)"
   IMAGE_TAG_CLOUD: "$(username)/$(IMAGE_TAG)"
 
 jobs:
@@ -52,8 +53,8 @@ jobs:
       if [ $? -eq 0 ]; then
         docker tag $(IMAGE_TAG_CLOUD) $(IMAGE_TAG)
       else
-        docker pull $(username)/$(Build.Repository.Name):master
-        docker tag $(username)/$(Build.Repository.Name):master $(IMAGE_TAG)
+        docker pull $(username)/$(BRANCH_NAME):master
+        docker tag $(username)/$(BRANCH_NAME):master $(IMAGE_TAG)
       fi
     displayName: "docker pull"
 
@@ -77,7 +78,7 @@ jobs:
   - script: |
       docker login -u $(username) -p $(password)
       docker pull $(IMAGE_TAG_CLOUD)
-      docker tag $(IMAGE_TAG_CLOUD) $(Build.Repository.Name):master
+      docker tag $(IMAGE_TAG_CLOUD) $(BRANCH_NAME):master
     displayName: "docker pull"
 
   - script: |
