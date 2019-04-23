@@ -5,7 +5,7 @@ variables:
   PIPENV_IGNORE_VIRTUALENVS: 1
   PIPENV_NOSPIN: 1
   IMAGE_TAG: "$(Build.Repository.Name):$(Build.SourceBranchName)"
-  IMAGE_TAG_CLOUD: "$(IMAGE_TAG)/$(IMAGE_TAG)"
+  IMAGE_TAG_CLOUD: "$(username)/$(IMAGE_TAG)"
 
 jobs:
 
@@ -31,6 +31,9 @@ jobs:
     inputs:
       versionSpec: '3.7.x'
       addToPath: true
+
+  - script: pip install flake8
+    displayName: 'Install flake8'
 
   - script: python -m flake8
     displayName: 'Run linter'
