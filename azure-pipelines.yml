@@ -87,7 +87,7 @@ jobs:
     displayName: "run tests"
 
   - task: PublishBuildArtifacts@1
-  inputs:
-    pathtoPublish: './project/bot_testing/artifacts'
-    artifactName: Test Output
+    inputs:
+      pathtoPublish: './project/bot_testing/artifacts'
+      artifactName: Test Output
 
