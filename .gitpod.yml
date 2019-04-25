@@ -1,0 +1,2 @@
+# Docs: https://www.gitpod.io/docs/41_Config_Gitpod_File
+image: python:3.7.3-slim-stretch

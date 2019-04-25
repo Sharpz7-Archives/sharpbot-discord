@@ -22,7 +22,6 @@ if os.environ.get("CICD", "FALSE") == "TRUE":
 
 def get_prefix(bot, message):
     """Gets the prefixes"""
-
     return commands.when_mentioned_or(*PREFIXES)(bot, message)
 
 
