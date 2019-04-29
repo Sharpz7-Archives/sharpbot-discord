@@ -120,7 +120,7 @@ class Plants:
         self.emoji = lookup_emoji(emoji)
         self.rarity = rarity
         self.single = False
-        self.level_up_boost = level_up_boost
+        self.pet_multiplyer = level_up_boost
         self.utilities = ["food"]
 
     def __repr__(self):
@@ -218,7 +218,7 @@ class Building:
         self.name = name.capitalize()
         self.emoji = lookup_emoji(emoji)
         self.hp = hp
-        self.mat = mat
+        self.mat = inv_find(mat)
 
     def __repr__(self):
         text = (f"{self.emoji} {self.name}")
@@ -304,7 +304,7 @@ class Place:
     lookup = {}
 
     def __init__(self, name, coords, typev, trade_name="Traders"):
-        self.name = name.capitalize()
+        self.name = name
         self.coords = coords
         self.type = lookup_emoji(typev)
         self.trade_name = trade_name
@@ -364,3 +364,26 @@ class Vector:
         x = self.x * scalar
         y = self.y * scalar
         return Vector(x, y)
+
+
+class GameItemRate:
+    """
+    Object that defines the rate at which something
+    like feeding upgrades increases.
+    """
+    def __init__(self, ary, style=None):
+        self.array = ary
+        self.style = style
+
+    def at(self, num):
+        if num > len(self.array) - 1:
+            if self.style == "linear":
+                return num
+            else:
+                return self.array[-1]
+        else:
+            return self.array[num-1]
+
+
+petlevelrate = GameItemRate([1, 1, 1, 2, 2, 3, 4, 5, 6, 7, 8])
+b_upgraderate = GameItemRate([1, 1, 2, 2, 2, 2, 3, 4, 5, 6, 7, 8], "linear")

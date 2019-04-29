@@ -64,7 +64,7 @@ class PlaceCommands(commands.Cog):
                 trades = []
                 for counter, item in enumerate(town.trades):
                     letter = NUM_TO_ALPHA[counter]
-                    trades.append(f"**Trade {letter}** - {item.name}")
+                    trades.append(f"**Trade {letter}** - {item}")
 
                 text = ",\n".join(trades)
                 text = (f"**You can trade with the {town.trade_name}**:\n\n"

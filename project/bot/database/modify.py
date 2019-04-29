@@ -69,13 +69,13 @@ async def building(author, building, clan, coords):
     await r.table(BUILD_TABLE).insert(data).run(bot_conn)
 
 
-async def upgrade(author, name, level):
+async def upgrade(author, name, cost):
     """Upgrades the user's building to the next level."""
 
     author = str(author)
     building = Building.lookup[name]
     data = {"level": r.row["level"]+1}
-    await inv(author, building.mat.name, -building.hp * level)
+    await inv(author, building.mat.name, -(cost))
     await r.table(BUILD_TABLE).get(author).update(data).run(bot_conn)
 
 

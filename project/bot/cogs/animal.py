@@ -1,9 +1,8 @@
-import math
 import random
 
 from discord.ext import commands
 
-from bot.classes import plants, creatures
+from bot.classes import plants, creatures, petlevelrate
 from bot.constants import MAX_FEED_AMOUNT
 from bot.database import modify, query
 from bot.utils import create_embed, utility_return
@@ -72,15 +71,14 @@ class AnimalCommands(commands.Cog):
 
         else:
             # Calculate the chance of having the pet level up
-            lvl_chance = 9 - int(math.log(amount * 10) + food.level_up_boost)
-            if lvl_chance <= 1:
-                lvl_chance = 2
+            lvl_chance = petlevelrate.at(pet["lvl"]) + food.pet_multiplyer
 
             # See if their pet levels up! How exciting.
-            if 1 == random.randint(1, lvl_chance):
-                title = f"Your pet took {food}'s' and your pet leveled to lvl {pet['lvl']+ 1}"
-
-                await modify.pet_lvl(ctx.author.id)
+            for _ in range(amount):
+                if 1 == random.randint(1, lvl_chance):
+                    title = f"Your pet took {food}'s' and your pet leveled to lvl {pet['lvl']+ 1}"
+                    await modify.pet_lvl(ctx.author.id)
+                    break
 
             # Aww damn, the pet didn't level up. That's a shame.
             else:
