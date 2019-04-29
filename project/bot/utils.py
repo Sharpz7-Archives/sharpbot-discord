@@ -111,6 +111,7 @@ async def get_coords(ctx, arg1, arg2, coords):
                 return x, y
         # If no matching place was found, let them know.
         else:
+            print("Sorry, that is not a valid place.")
             await ctx.send("Sorry, that is not a valid place.")
             return
 

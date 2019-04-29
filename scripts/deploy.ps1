@@ -94,11 +94,10 @@ else {
         $user = $d['DOCKERU']
         $cloud_img = "$user/$img"
 
-        $branch_pull = docker pull "${cloud_img}:$branch" | out-null
+        $branch_pull = docker pull "${cloud_img}:$branch"
         $result = $?
         if ($result) {
             "Using local branch image..."
-            $branch_pull
             if ( $branch_pull -Match "Image is up to date") {
                 "Image up to date!"
             }

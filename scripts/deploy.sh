@@ -101,7 +101,6 @@ else
         branch_pull=$(docker pull "$cloud_img:$branch")
         RESULT=$?
         if [[ $RESULT == 0 ]]; then
-
             echo "Using local branch image..."
             if [[ $branch_pull =~ "Image is up to date" ]]; then
                 echo "Image up to date!"
