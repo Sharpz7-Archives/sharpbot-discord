@@ -214,6 +214,19 @@ class OwnerCommands(commands.Cog):
         clear_screen()
         os.execl(sys.executable, sys.executable, "-u", *sys.argv)
 
+    @commands.command(hidden=True)
+    @commands.check(is_owner)
+    async def safe_restart(self, ctx):
+        """
+        Reloads all of the bot's code!
+        """
+
+        data = self.load(YML_FILE)
+        data["startup_channel"] = ctx.channel.id
+        self.write(data, YML_FILE)
+        await ctx.send("`restarting...`")
+        exit(0)
+
     @commands.command(name="test", hidden=True)
     @commands.check(is_owner)
     async def test(self, ctx):

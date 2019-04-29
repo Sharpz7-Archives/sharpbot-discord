@@ -37,6 +37,7 @@ boats:
         speed: 1
 
 trades:
+    # If this is a crafted item, it MUST be upgraded item first
     wood_metal:
         selling:
             - [Wood, 5]

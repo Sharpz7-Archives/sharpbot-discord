@@ -169,16 +169,26 @@ class PlayerCommands(commands.Cog):
         else:
             # Displays all of todays recipes
             title = "**TODAY'S RECIPES**"
-            text = await self.display_recipes()
+            text = await self.display_recipes(inv)
 
             embed = await create_embed(ctx, title, text)
             await ctx.send(embed=embed)
 
-    async def display_recipes(self):
+    async def display_recipes(self, inv):
         display = []
-        for counter, trade_desc in enumerate(craft_recipes):
+        for counter, recipe in enumerate(craft_recipes):
+            recipe_desc = recipe
+            if recipe.upgrade:
+                selling_list = []
+                upgrade_item = recipe.selling[0]
+                # Exclude Initial item (the upgraded item)
+                selling_list.append(f"{upgrade_item[0]}")
+                for item, price in recipe.selling[1:]:
+                    cost = inv.get(upgrade_item[0].name, 1)
+                    selling_list.append(f"{price * cost} {item}")
+                recipe_desc = recipe.crafttext.replace("xxx", ' and '.join(selling_list))
             letter = NUM_TO_ALPHA[counter]
-            display.append(f"**Recipe {letter} -** {trade_desc}")
+            display.append(f"**Recipe {letter} -** {recipe_desc}")
 
         return "\n\n".join(display)
 

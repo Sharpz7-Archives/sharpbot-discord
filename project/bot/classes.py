@@ -256,8 +256,13 @@ class Trade:
         # Checks if a item is being upgraded
         if self.buying[0].single and self.buying[1] > 1:
             self.price = "an upgraded"
+            self.upgrade = True
         else:
             self.price = self.buying[1]
+            self.upgrade = False
+
+        # So we can include upgrade cost.
+        self.crafttext = f"xxx **for** {self.price} {self.buying[0]}"
 
     def __repr__(self):
         text = (f"{' and '.join(self.selling_list)} **for** {self.price} {self.buying[0]}")
