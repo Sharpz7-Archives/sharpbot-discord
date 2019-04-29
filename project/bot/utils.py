@@ -102,16 +102,17 @@ async def get_coords(ctx, arg1, arg2, coords):
 
     # They must've chosen a place!
     else:
-        arg_place = f"{arg1} {arg2}".lower()
+        arg_place = (f"{arg1} {arg2}").lower()
         for place in Place.lookup.values():
             # If the name is spelt close to right...
+            print(fuzz.ratio(place.name.lower(), arg_place))
             if fuzz.ratio(place.name.lower(), arg_place) > 60:
                 x, y = place.coords
                 return x, y
         # If no matching place was found, let them know.
         else:
             await ctx.send("Sorry, that is not a valid place.")
-            return
+            return 0, 0
 
 
 async def move_direction(direction, amount, x, y):

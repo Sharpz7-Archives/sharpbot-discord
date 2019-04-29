@@ -52,10 +52,10 @@ if ($d["NO_DOCKER"] -eq "TRUE") {
     pipenv run "py -3.7" -u run.py
 }
 else {
-    $stop_containers = docker-compose down | out-null
+    docker-compose down
     $result = $?
     if ($result) {
-        echo "Found docker..."
+        "Found docker..."
     }
     else {
         "Docker and docker-compose must be running/installed for deployment. exiting..."
