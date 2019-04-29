@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from string import ascii_uppercase as alphabet
 from unicodedata import lookup as emoji
@@ -64,6 +65,10 @@ try:
         data = yaml.safe_load(f)
 
 except FileNotFoundError:
+    with open(DEFAULT_GCONSTANTS_FILE, "r") as f:
+        data = yaml.safe_load(f)
+
+if os.environ.get("CICD", "FALSE") == "TRUE":
     with open(DEFAULT_GCONSTANTS_FILE, "r") as f:
         data = yaml.safe_load(f)
 

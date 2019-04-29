@@ -1,4 +1,5 @@
 import math
+import os
 import yaml
 
 from unicodedata import lookup as lookup_emoji
@@ -11,6 +12,10 @@ try:
         data = yaml.safe_load(f)
 
 except FileNotFoundError:
+    with open(DEFAULT_CLASSES_FILE, "r") as f:
+        data = yaml.safe_load(f)
+
+if os.environ.get("CICD", "FALSE") == "TRUE":
     with open(DEFAULT_CLASSES_FILE, "r") as f:
         data = yaml.safe_load(f)
 
