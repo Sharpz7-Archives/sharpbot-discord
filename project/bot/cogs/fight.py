@@ -188,7 +188,7 @@ class Duel:
             attack = ran.choice([self.player1, self.player2])
             defend = (self.player1 if attack != self.player1 else self.player2)
 
-            damage, animal_dmg, health, weapon, animal = await self.do_move(attack, defend)
+            damage, animal_dmg, weapon, animal = await self.do_move(attack, defend)
 
             await asyncio.sleep(self.TURN_DURATION)
             counter += 1
@@ -204,11 +204,6 @@ class Duel:
             else:
                 damage = ""
 
-            if health != 0:
-                health = f"{attack.name} gained {health} from his {weapon}!\n"
-            else:
-                health = ""
-
             title = f"You are now in a duel!!"
             text = (f"Let the fun begin!\n\n"
                     f"**{self.player1.name}:**\n"
@@ -218,7 +213,6 @@ class Duel:
 
                     f"**LIVE FEED**\n"
                     f"{damage}"
-                    f"{health}"
                     f"{animal}")
 
             embed = await create_embed(self.response, title, text)
@@ -236,17 +230,13 @@ class Duel:
             weapon = await self.weapon_find(attack.weapons)
         if weapon.damage is None:
             damage = 0
-            health = await self.health(attack, weapon)
-
-        if weapon.health is None:
-            health = 0
+        else:
             damage = await self.damage(attack, weapon)
 
         animal, animal_dmg = await self.animal(attack)
 
         defend.health -= (damage + animal_dmg)
-        attack.health += health
-        return damage, animal_dmg, health, weapon, animal
+        return damage, animal_dmg, weapon, animal
 
     async def death(self, player):
         """Oops, someone died. Stop the duel, and clean up the embed."""
@@ -302,6 +292,13 @@ class Player:
         self.pet = self.player['pet']
         self.id = self.player["id"]
         self.killed = []
+
+        # Add any shield health
+        for counter, name in enumerate(self.weapons):
+            item = items.get(name)
+            if item is not None and item.health:
+                self.health += item.health
+                self.weapons[counter] = "Empty"
 
 
 def setup(bot):
