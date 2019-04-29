@@ -87,3 +87,4 @@ class Emoji:
     pickaxe = emoji("PICK")
     axe = emoji("HAMMER")
     confirm = emoji("WHITE HEAVY CHECK MARK")
+    fist = emoji("RAISED FIST")

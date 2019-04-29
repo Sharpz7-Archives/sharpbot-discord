@@ -4,10 +4,10 @@ import discord
 from discord.errors import Forbidden
 from discord.ext import commands
 
-from bot.classes import craft_recipes, creatures, plants
+from bot.classes import craft_recipes, creatures, plants, craft_upgraderate
 from bot.constants import ALPHA_TO_NUM, NUM_TO_ALPHA, OFFICIAL_SERVERS, WALKING
 from bot.database import modify, query
-from bot.utils import at_town, create_embed, find_trade, utility_search
+from bot.utils import at_town, create_embed, find_trade, utility_search, upgrade_text
 
 
 class PlayerCommands(commands.Cog):
@@ -137,10 +137,25 @@ class PlayerCommands(commands.Cog):
             letter = letter.upper()
             index = ALPHA_TO_NUM[letter] - 1
             recipe = craft_recipes[index]
+            selling = recipe.selling
+
+            if recipe.upgrade:
+                selling = recipe.selling[1:]
+                item = recipe.selling[0][0]
+                if inv.get(item.name, 0) < 1:
+                    title = f"You don't have a {item}!"
+                    text = "To craft again, do /craft!"
+                    embed = await create_embed(ctx, title, text)
+                    await ctx.send(embed=embed)
+                    return
 
             # Makes sure you have all the trade items in your inv
-            for item, price in recipe.selling:
-                if inv.get(item.name, 0) < price * amount:
+            for item, price in selling:
+                cost = price * amount
+                if recipe.upgrade:
+                    lvl = inv.get(recipe.selling[0][0].name, 1)
+                    cost = cost * craft_upgraderate.at(lvl)
+                if inv.get(item.name, 0) < cost:
                     title = f"You don't have enough {item}!"
                     text = "To craft again, do /craft!"
                     embed = await create_embed(ctx, title, text)
@@ -157,10 +172,10 @@ class PlayerCommands(commands.Cog):
                     title = f"You already have a {buying}!"
 
                 else:
-                    title = await modify.trade(ctx.author.id, recipe, amount)
+                    title = await modify.trade(ctx.author.id, recipe, amount, inv)
 
             else:
-                title = await modify.trade(ctx.author.id, recipe, amount)
+                title = await modify.trade(ctx.author.id, recipe, amount, inv)
 
             text = "To craft again, do /t trade!"
             embed = await create_embed(ctx, title, text)
@@ -179,14 +194,7 @@ class PlayerCommands(commands.Cog):
         for counter, recipe in enumerate(craft_recipes):
             recipe_desc = recipe
             if recipe.upgrade:
-                selling_list = []
-                upgrade_item = recipe.selling[0]
-                # Exclude Initial item (the upgraded item)
-                selling_list.append(f"{upgrade_item[0]}")
-                for item, price in recipe.selling[1:]:
-                    cost = inv.get(upgrade_item[0].name, 1)
-                    selling_list.append(f"{price * cost} {item}")
-                recipe_desc = recipe.crafttext.replace("xxx", ' and '.join(selling_list))
+                recipe_desc = await upgrade_text(recipe, inv)
             letter = NUM_TO_ALPHA[counter]
             display.append(f"**Recipe {letter} -** {recipe_desc}")
 

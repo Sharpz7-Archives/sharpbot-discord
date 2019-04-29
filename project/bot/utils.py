@@ -10,7 +10,7 @@ from PIL import Image
 from rethinkdb import RethinkDB
 from rethinkdb.errors import ReqlOpFailedError
 
-from bot.classes import Place, Vector
+from bot.classes import Place, Vector, craft_upgraderate
 from bot.constants import (BOAT_TABLE, BUILD_TABLE, DATABASE_NAME, HOST,
                            LAND_COLOUR, SEA_FILE, SHORE, SHORE_FILE,
                            SWAMP_COLOUR, TOWNSIZE, USER_TABLE, WATER_COLOUR)
@@ -72,8 +72,14 @@ async def suggestions(ctx):
         "Wanna hunt for some nice gear? Try `/find`!"
     ]
 
-    command_name = str(ctx.command).split(" ")[0]
-    suggest = planned_suggestions.get(command_name)
+    try:
+        command_name = str(ctx.command).split(" ")[0]
+
+    # Triggers if edits are made, like in /f duel
+    except AttributeError:
+        suggest = None
+    else:
+        suggest = planned_suggestions.get(command_name)
 
     if not suggest:
         suggest = random.choice(random_suggestions)
@@ -227,6 +233,22 @@ async def is_owner(ctx):
         text = "If you believe this is a error, please contact us on Github."
         embed = await create_embed(ctx, title, text)
         await ctx.send(embed=embed)
+
+
+async def upgrade_text(recipe, inv, times=None):
+    """Displays craft upgrade values instead of normal values"""
+    selling_list = []
+    upgrade_item = recipe.selling[0]
+    # Exclude Initial item (the upgraded item)
+    selling_list.append(f"{upgrade_item[0]}")
+    for item, price in recipe.selling[1:]:
+        lvl = inv.get(upgrade_item[0].name, 1)
+        cost = craft_upgraderate.at(lvl)
+        selling_list.append(f"{price * cost} {item}")
+    desc = recipe.crafttext.replace("xxx", ' and '.join(selling_list))
+    if times:
+        desc += f" {times} times!"
+    return desc
 
 
 def utility_search(*args, key=None):

@@ -3,7 +3,7 @@ import os
 import yaml
 
 from unicodedata import lookup as lookup_emoji
-from bot.constants import CLASSES_FILE, DEFAULT_CLASSES_FILE
+from bot.constants import CLASSES_FILE, DEFAULT_CLASSES_FILE, Emoji
 import random
 
 
@@ -75,6 +75,17 @@ items_data = data.get("items")
 
 for key, values in items_data.items():
     Items.lookup[key] = Items(**values)
+
+
+class Fist:
+    def __init__(self):
+        self.damage = 1
+        self.emoji = Emoji.fist
+        self.name = "Fist"
+        self.health = None
+
+    def __repr__(self):
+        return f"{self.emoji} {self.name}"
 
 
 class Creatures:
@@ -392,3 +403,4 @@ class GameItemRate:
 
 petlevelrate = GameItemRate([1, 1, 1, 2, 2, 3, 4, 5, 6, 7, 8])
 b_upgraderate = GameItemRate([1, 1, 2, 2, 2, 2, 3, 4, 5, 6, 7, 8], "linear")
+craft_upgraderate = GameItemRate([1, 2, 2, 2, 3, 3, 3, 4, 5, 6, 7, 8])

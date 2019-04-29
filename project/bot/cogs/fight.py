@@ -3,7 +3,7 @@ import random as ran
 
 from discord.ext import commands
 
-from bot.classes import items, creatures
+from bot.classes import items, creatures, Fist
 from bot.database import query, modify
 from bot.utils import create_embed
 
@@ -231,10 +231,9 @@ class Duel:
         """Let one player make their strike."""
 
         if (await self.check_equal(attack.weapons)):
-            weapon = items.get("Fist")
+            weapon = Fist()
         else:
             weapon = await self.weapon_find(attack.weapons)
-
         if weapon.damage is None:
             damage = 0
             health = await self.health(attack, weapon)
