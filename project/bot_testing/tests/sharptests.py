@@ -44,7 +44,7 @@ def setup(file):
 
     commands = [
         ("player", "/start"),
-        ("owner", "/insta move lava lak")
+        ("owner", "/insta move pthon palace")
     ]
 
     file.create_test("move-test", commands=commands)
