@@ -30,8 +30,8 @@ async def user(author, *args):
                 data.append(await r.table(USER_TABLE).get(author)[item].run(bot_conn))
 
         except ReqlNonExistenceError:
-            raise UserNotFoundError("User not found in database",
-                                    author)
+            raise UserNotFoundError
+
     # Removes useless tuple
     if data is not None and len(data) == 1:
         data = data[0]
@@ -153,8 +153,7 @@ async def boat(author, *args):
             for item in args:
                 data.append(await r.table(BOAT_TABLE).get(author)[item].run(bot_conn))
         except ReqlNonExistenceError:
-            raise BoatNotFoundError("Boat not found in database for user",
-                                    author)
+            raise BoatNotFoundError
 
     # Removes useless tuple
     if data is not None and len(data) == 1:

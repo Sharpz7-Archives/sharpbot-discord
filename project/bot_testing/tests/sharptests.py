@@ -41,3 +41,10 @@ def setup(file):
     ]
 
     file.create_test("default-test", commands=commands)
+
+    commands = [
+        ("player", "/start"),
+        ("owner", "/insta move lava lak")
+    ]
+
+    file.create_test("move-test", commands=commands)

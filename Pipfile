@@ -6,11 +6,12 @@ verify_ssl = true
 pillow = "*"
 "flake8" = "*"
 yarl = "<1.2"
-rethinkdb = "*"
+rethinkdb = "<=2.4.1"
 ptvsd = "*"
 pyyaml = ">=4.2b1"
 pathlib = "*"
 discord-py = "*"
+fuzzywuzzy = "*"
 
 [dev-packages]
 pylint = "*"

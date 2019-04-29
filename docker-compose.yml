@@ -4,7 +4,7 @@ services:
     hostname: "rdb"
     image: rethinkdb:2.3.6
     volumes:
-      - "./rethink_data:/data"
+      - "./rethinkdb_data:/data"
     entrypoint: rethinkdb -n pdrdb -d /data --bind 0.0.0.0 --server-tag default --http-port 28010 --driver-port 28015
     logging:
         driver: none

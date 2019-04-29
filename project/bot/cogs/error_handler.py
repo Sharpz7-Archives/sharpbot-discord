@@ -3,8 +3,7 @@ import os
 
 from discord.ext import commands
 
-from bot.errors import BoatNotFoundError
-from bot.errors import UserNotFoundError
+from bot.errors import BoatNotFoundError, UserNotFoundError
 from bot.utils import create_embed
 
 

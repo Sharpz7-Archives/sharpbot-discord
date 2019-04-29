@@ -5,6 +5,7 @@ import random
 from contextlib import suppress
 
 import discord
+from fuzzywuzzy import fuzz
 from PIL import Image
 from rethinkdb import RethinkDB
 from rethinkdb.errors import ReqlOpFailedError
@@ -103,7 +104,8 @@ async def get_coords(ctx, arg1, arg2, coords):
     else:
         arg_place = f"{arg1} {arg2}".lower()
         for place in Place.lookup.values():
-            if place.name.lower() == arg_place:
+            # If the name is spelt close to right...
+            if fuzz.ratio(place.name.lower(), arg_place) > 80:
                 x, y = place.coords
                 return x, y
         # If no matching place was found, let them know.
@@ -217,7 +219,13 @@ async def distance(coords):
 
 async def is_owner(ctx):
     """Checks to see if user is a owner"""
-    return ctx.author.id in (ctx.bot.appinfo.owner.id, HOST)
+    if ctx.author.id in (ctx.bot.appinfo.owner.id, HOST):
+        return True
+    else:
+        title = "You do not have permission to run this command!"
+        text = "If you believe this is a error, please contact us on Github."
+        embed = await create_embed(ctx, title, text)
+        await ctx.send(embed=embed)
 
 
 def utility_search(*args, key=None):
