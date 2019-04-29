@@ -64,9 +64,9 @@ else {
 
     docker system prune -f
 
-    mkdir -p rethink_data -Force > $null
+    mkdir -p rethinkdb_data -Force > $null
     mkdir -p backups -Force > $null
-    $source = "rethink_data"
+    $source = "rethinkdb_data"
     $dest = "./backups/"
     $date = Get-Date -Format MMM-dd-yy
     $filename = "rethinkdb-$date.tgz"

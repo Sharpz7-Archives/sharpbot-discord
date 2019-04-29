@@ -6,8 +6,6 @@ services:
     volumes:
       - "./rethinkdb_data:/data"
     entrypoint: rethinkdb -n pdrdb -d /data --bind 0.0.0.0 --server-tag default --http-port 28010 --driver-port 28015
-    logging:
-        driver: none
 
   sharpbot:
     hostname: "sharpbot"

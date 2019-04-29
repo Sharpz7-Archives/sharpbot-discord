@@ -54,9 +54,9 @@ else
     # Docker Install
     $SUDO docker system prune -f
 
-    mkdir -p rethink_data
+    mkdir -p rethinkdb_data
     mkdir -p backups
-    SRCDIR="rethink_data"
+    SRCDIR="rethinkdb_data"
     DESTDIR="./backups/"
     FILENAME=rethinkdb-$(date +%b-%d-%y).tgz
     tar --create --gzip --file=$DESTDIR$FILENAME $SRCDIR
