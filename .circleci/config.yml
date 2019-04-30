@@ -30,7 +30,7 @@ jobs:
           command: |
             source $BASH_ENV
             docker login -u $DOCKER_USER -p $DOCKER_PASS
-            test=$(docker pull ${IMAGE_TAG_CLOUD})
+            test=$(docker pull ${IMAGE_TAG_CLOUD}) || true
             if [ $? == 0 ]; then
               docker tag ${IMAGE_TAG_CLOUD} ${IMAGE_TAG}
             else
