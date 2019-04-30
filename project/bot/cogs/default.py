@@ -78,7 +78,7 @@ class DefaultCommands(commands.Cog):
                 "contribute! :heart:")
 
         embed = await create_embed(ctx, title, text)
-        embed.add_field(name="Server", value="[Server](https://discord.gg/djfDeQe)")
+        embed.add_field(name="Server", value="[Server](https://discord.gg/kE3FXBR)")
         embed.add_field(name="Invite", value="[Invite](https://discordapp.com/oauth2/authorize?client_id="
                                              "404251984892526593&permissions=85056&scope=bot)")
         embed.add_field(name="Contributers / Devs",
