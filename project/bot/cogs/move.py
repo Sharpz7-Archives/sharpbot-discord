@@ -265,6 +265,7 @@ class Walk:
 
         current_coords = await linear(self.coords, self.move)
         await modify.coord(self.author, current_coords)
+        # Check if the boat needs to be moved too.
         if self.in_boat:
             await modify.move_boat(self.author, current_coords)
         return current_coords, self.coords

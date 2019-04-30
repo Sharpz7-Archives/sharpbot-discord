@@ -1,19 +1,16 @@
 class UserNotFoundError(Exception):
-    def __init__(self, message, _id):
-        self.id = _id
-        self.message = f"{message}: {_id}"
+    def __init__(self):
+        pass
 
-    def __str__(self):
-        return self.message
+
+class UserNotOwner(Exception):
+    def __init__(self):
+        pass
 
 
 class BoatNotFoundError(Exception):
-    def __init__(self, message, _id):
-        self.id = _id
-        self.message = f"{message}: {_id}"
-
-    def __str__(self):
-        return self.message
+    def __init__(self):
+        pass
 
 
 class TestFailError(Exception):

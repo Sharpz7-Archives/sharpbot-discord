@@ -52,10 +52,10 @@ if ($d["NO_DOCKER"] -eq "TRUE") {
     pipenv run "py -3.7" -u run.py
 }
 else {
-    $stop_containers = docker-compose down | out-null
+    docker-compose down
     $result = $?
     if ($result) {
-        echo "Found docker..."
+        "Found docker..."
     }
     else {
         "Docker and docker-compose must be running/installed for deployment. exiting..."
@@ -64,9 +64,9 @@ else {
 
     docker system prune -f
 
-    mkdir -p rethink_data -Force > $null
+    mkdir -p rethinkdb_data -Force > $null
     mkdir -p backups -Force > $null
-    $source = "rethink_data"
+    $source = "rethinkdb_data"
     $dest = "./backups/"
     $date = Get-Date -Format MMM-dd-yy
     $filename = "rethinkdb-$date.tgz"
@@ -94,11 +94,10 @@ else {
         $user = $d['DOCKERU']
         $cloud_img = "$user/$img"
 
-        $branch_pull = docker pull "${cloud_img}:$branch" | out-null
+        $branch_pull = docker pull "${cloud_img}:$branch"
         $result = $?
         if ($result) {
             "Using local branch image..."
-            $branch_pull
             if ( $branch_pull -Match "Image is up to date") {
                 "Image up to date!"
             }

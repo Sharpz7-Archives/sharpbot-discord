@@ -1,7 +1,7 @@
 import asyncio
 
 from discord.ext import commands
-from bot.classes import Building, materials
+from bot.classes import Building, materials, b_upgraderate
 
 from bot.constants import Emoji, CONFIRM_REACTION_TIMEOUT, BATTLING
 from bot.database import query, modify
@@ -122,7 +122,7 @@ class BuildingCommands(commands.Cog):
             coords, level, name = await query.building(ctx.author.id, "coords", "level", "name")
 
             b = Building.lookup[name]
-            cost = b.hp * level
+            cost = b.hp * b_upgraderate.at(level)
 
             # Get the contents about the building's vaults.
             private = '\n'.join(await query.building_parse(ctx.author.id, "private"))
@@ -148,16 +148,17 @@ class BuildingCommands(commands.Cog):
         name, level = await query.building(ctx.author.id, "name", "level")
         b = Building.lookup[name]
         inv = await query.user(ctx.author.id, "inventory")
+        cost = b.hp * b_upgraderate.at(level)
 
         no_material = b.mat.name not in inv
-        enough_material = inv.get(b.mat.name, 0) >= b.hp * level
+        enough_material = inv.get(b.mat.name, 0) >= cost
 
         if no_material or not enough_material:
             title = f"You dont have enough {b.mat}!"
             text = "Get more with /mine!"
 
         else:
-            await modify.upgrade(ctx.author.id, b.name, level + 1)
+            await modify.upgrade(ctx.author.id, b.name, cost)
             title = f"Upgraded your {b}!"
             text = (f"**Current Level** - {level + 1}\n"
                     f"Do /help build for more info!")

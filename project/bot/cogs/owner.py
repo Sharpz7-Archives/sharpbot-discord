@@ -9,7 +9,7 @@ from discord.ext import commands
 
 from bot.constants import YML_FILE, COGS_FILE
 from bot.database import modify, query
-from bot.utils import clear_screen, create_embed, is_owner, get_coords
+from bot.utils import create_embed, is_owner, get_coords
 
 
 class OwnerCommands(commands.Cog):
@@ -192,27 +192,21 @@ class OwnerCommands(commands.Cog):
 
     @commands.command(hidden=True)
     @commands.check(is_owner)
-    async def cls(self, ctx):
-        """
-        Clear the terminal's screen
-        """
-        clear_screen()
-
-        await ctx.send("`DONE`")
-
-    @commands.command(hidden=True)
-    @commands.check(is_owner)
-    async def restart(self, ctx):
+    async def restart(self, ctx, option=None):
         """
         Reloads all of the bot's code!
+
+        If you want a non-docker restart, do /restart local
         """
 
         data = self.load(YML_FILE)
         data["startup_channel"] = ctx.channel.id
         self.write(data, YML_FILE)
         await ctx.send("`restarting...`")
-        clear_screen()
-        os.execl(sys.executable, sys.executable, "-u", *sys.argv)
+        if option == "local":
+            os.execl(sys.executable, sys.executable, "-u", *sys.argv)
+        else:
+            exit(0)
 
     @commands.command(name="test", hidden=True)
     @commands.check(is_owner)

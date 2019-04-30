@@ -15,7 +15,7 @@ def setup(file):
     commands = [
         ("player", "/start"),
         ("owner", "/insta inv 1 cat"),
-        ("animal", "/pet cat"),
+        ("animal", "/pet create cat"),
         ("player", "/inv", ("keyinmessage", "1", "Cat")),
     ]
 
@@ -26,8 +26,8 @@ def setup(file):
         ("owner", "/insta inv 1 cat"),
         ("owner", "/insta inv 10 acorn"),
         ("player", "/inv", ("keyinmessage", "1", "Cat", "10", "Acorn")),
-        ("animal", "/pet cat"),
-        ("animal", "/feed acorn"),
+        ("animal", "/pet create cat"),
+        ("animal", "/pet feed acorn"),
         ("player", "/inv", ("keyinmessage", "9", "Acorn"))
     ]
 
@@ -41,3 +41,10 @@ def setup(file):
     ]
 
     file.create_test("default-test", commands=commands)
+
+    commands = [
+        ("player", "/start"),
+        ("owner", "/insta move pthon palace")
+    ]
+
+    file.create_test("move-test", commands=commands)

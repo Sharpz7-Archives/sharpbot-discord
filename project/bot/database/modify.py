@@ -1,8 +1,8 @@
 from rethinkdb import RethinkDB
 
-from bot.classes import Building
+from bot.classes import Building, craft_upgraderate
 from bot.constants import BUILD_TABLE, USER_TABLE, BOAT_TABLE
-from bot.utils import bot_conn
+from bot.utils import bot_conn, upgrade_text
 
 
 r = RethinkDB()
@@ -30,7 +30,7 @@ async def coord(author, coords):
     await r.table(USER_TABLE).get(author).update(data).run(bot_conn)
 
 
-async def trade(author, trade, times):
+async def trade(author, trade, times, inventory):
     """
     Remove and add items to a user's inventory,
     depending on the trade specified
@@ -38,13 +38,30 @@ async def trade(author, trade, times):
 
     author = str(author)
     buying, bp = trade.buying
-    for item, price in trade.selling:
-        await inv(author, item.name, -(price * times))
+    selling = trade.selling
+
+    # Does upgrade item seperately
+    if trade.upgrade:
+        selling = trade.selling[1:]
+        await inv(author, trade.selling[0][0].name, -(1 * times))
+
+    for item, price in selling:
+        cost = price * times
+        # If item is an upgrade...
+        if trade.upgrade:
+            # Make sure upgraded costs are used.
+            lvl = inventory.get(trade.selling[0][0].name)
+            cost = cost * craft_upgraderate.at(lvl)
+        await inv(author, item.name, -(cost))
 
     await inv(author, buying.name, (bp * times))
 
+    if trade.upgrade:
+        title = await upgrade_text(trade, inventory, times)
+    else:
+        title = f"Traded {trade} {times} *times*!"
+
     # Returns a nice text message explaining what they traded.
-    title = f"Traded {trade} {times} *times*!"
     return title
 
 
@@ -69,13 +86,13 @@ async def building(author, building, clan, coords):
     await r.table(BUILD_TABLE).insert(data).run(bot_conn)
 
 
-async def upgrade(author, name, level):
+async def upgrade(author, name, cost):
     """Upgrades the user's building to the next level."""
 
     author = str(author)
     building = Building.lookup[name]
     data = {"level": r.row["level"]+1}
-    await inv(author, building.mat.name, -building.hp * level)
+    await inv(author, building.mat.name, -(cost))
     await r.table(BUILD_TABLE).get(author).update(data).run(bot_conn)
 
 

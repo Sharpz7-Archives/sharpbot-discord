@@ -5,11 +5,12 @@ import random
 from contextlib import suppress
 
 import discord
+from fuzzywuzzy import fuzz
 from PIL import Image
 from rethinkdb import RethinkDB
 from rethinkdb.errors import ReqlOpFailedError
 
-from bot.classes import Place, Vector
+from bot.classes import Place, Vector, craft_upgraderate
 from bot.constants import (BOAT_TABLE, BUILD_TABLE, DATABASE_NAME, HOST,
                            LAND_COLOUR, SEA_FILE, SHORE, SHORE_FILE,
                            SWAMP_COLOUR, TOWNSIZE, USER_TABLE, WATER_COLOUR)
@@ -71,8 +72,14 @@ async def suggestions(ctx):
         "Wanna hunt for some nice gear? Try `/find`!"
     ]
 
-    command_name = str(ctx.command).split(" ")[0]
-    suggest = planned_suggestions.get(command_name)
+    try:
+        command_name = str(ctx.command).split(" ")[0]
+
+    # Triggers if edits are made, like in /f duel
+    except AttributeError:
+        suggest = None
+    else:
+        suggest = planned_suggestions.get(command_name)
 
     if not suggest:
         suggest = random.choice(random_suggestions)
@@ -101,13 +108,15 @@ async def get_coords(ctx, arg1, arg2, coords):
 
     # They must've chosen a place!
     else:
-        arg_place = f"{arg1} {arg2}".lower()
+        arg_place = (f"{arg1} {arg2}").lower()
         for place in Place.lookup.values():
-            if place.name.lower() == arg_place:
+            # If the name is spelt close to right...
+            if fuzz.ratio(place.name.lower(), arg_place) > 60:
                 x, y = place.coords
                 return x, y
         # If no matching place was found, let them know.
         else:
+            print("Sorry, that is not a valid place.")
             await ctx.send("Sorry, that is not a valid place.")
             return
 
@@ -217,7 +226,29 @@ async def distance(coords):
 
 async def is_owner(ctx):
     """Checks to see if user is a owner"""
-    return ctx.author.id in (ctx.bot.appinfo.owner.id, HOST)
+    if ctx.author.id in (ctx.bot.appinfo.owner.id, HOST):
+        return True
+    else:
+        title = "You do not have permission to run this command!"
+        text = "If you believe this is a error, please contact us on Github."
+        embed = await create_embed(ctx, title, text)
+        await ctx.send(embed=embed)
+
+
+async def upgrade_text(recipe, inv, times=None):
+    """Displays craft upgrade values instead of normal values"""
+    selling_list = []
+    upgrade_item = recipe.selling[0]
+    # Exclude Initial item (the upgraded item)
+    selling_list.append(f"{upgrade_item[0]}")
+    for item, price in recipe.selling[1:]:
+        lvl = inv.get(upgrade_item[0].name, 1)
+        cost = craft_upgraderate.at(lvl)
+        selling_list.append(f"{price * cost} {item}")
+    desc = recipe.crafttext.replace("xxx", ' and '.join(selling_list))
+    if times:
+        desc += f" {times} times!"
+    return desc
 
 
 def utility_search(*args, key=None):
@@ -240,23 +271,6 @@ def utility_return(*args, key=None):
         for item in instances:
             if key == item.name:
                 return item
-
-
-def clear_screen():
-    """
-    Clear the terminal's screen
-
-    If an unsupported OS is given, no command is run to prevent CLI errors
-    """
-    commands = {
-        "nt": "cls",
-        "posix": "clear"
-    }
-
-    # os.system succeeds without errors even when given a blank string
-    command = commands.get(os.name, "")
-
-    os.system(command)
 
 
 class Wilderness:

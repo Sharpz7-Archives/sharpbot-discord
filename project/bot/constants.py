@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from string import ascii_uppercase as alphabet
 from unicodedata import lookup as emoji
@@ -38,7 +39,7 @@ HOST = 149286699187437568  # TODO remove this!
 
 OFFICIAL_SERVERS = (
     468432687997124618,  # testing server
-    467653644179996683   # offical server
+    572866688802881560   # offical server
 )
 
 WATER_COLOUR = (0, 148, 255)  # blue
@@ -67,6 +68,10 @@ except FileNotFoundError:
     with open(DEFAULT_GCONSTANTS_FILE, "r") as f:
         data = yaml.safe_load(f)
 
+if os.environ.get("CICD", "FALSE") == "TRUE":
+    with open(DEFAULT_GCONSTANTS_FILE, "r") as f:
+        data = yaml.safe_load(f)
+
 # All constants required by the game
 EXHAUST_MINE_CHANCE = data.get("EXHAUST_MINE_CHANCE")  # the chance of exhausting a coord's materials
 TOWNSIZE = data.get("TOWNSIZE")
@@ -82,3 +87,4 @@ class Emoji:
     pickaxe = emoji("PICK")
     axe = emoji("HAMMER")
     confirm = emoji("WHITE HEAVY CHECK MARK")
+    fist = emoji("RAISED FIST")

@@ -1,8 +1,9 @@
 import math
+import os
 import yaml
 
 from unicodedata import lookup as lookup_emoji
-from bot.constants import CLASSES_FILE, DEFAULT_CLASSES_FILE
+from bot.constants import CLASSES_FILE, DEFAULT_CLASSES_FILE, Emoji
 import random
 
 
@@ -11,6 +12,10 @@ try:
         data = yaml.safe_load(f)
 
 except FileNotFoundError:
+    with open(DEFAULT_CLASSES_FILE, "r") as f:
+        data = yaml.safe_load(f)
+
+if os.environ.get("CICD", "FALSE") == "TRUE":
     with open(DEFAULT_CLASSES_FILE, "r") as f:
         data = yaml.safe_load(f)
 
@@ -72,6 +77,17 @@ for key, values in items_data.items():
     Items.lookup[key] = Items(**values)
 
 
+class Fist:
+    def __init__(self):
+        self.damage = 1
+        self.emoji = Emoji.fist
+        self.name = "Fist"
+        self.health = None
+
+    def __repr__(self):
+        return f"{self.emoji} {self.name}"
+
+
 class Creatures:
     """
     All the animals you can get in the world
@@ -115,7 +131,7 @@ class Plants:
         self.emoji = lookup_emoji(emoji)
         self.rarity = rarity
         self.single = False
-        self.level_up_boost = level_up_boost
+        self.pet_multiplyer = level_up_boost
         self.utilities = ["food"]
 
     def __repr__(self):
@@ -213,7 +229,7 @@ class Building:
         self.name = name.capitalize()
         self.emoji = lookup_emoji(emoji)
         self.hp = hp
-        self.mat = mat
+        self.mat = inv_find(mat)
 
     def __repr__(self):
         text = (f"{self.emoji} {self.name}")
@@ -251,8 +267,13 @@ class Trade:
         # Checks if a item is being upgraded
         if self.buying[0].single and self.buying[1] > 1:
             self.price = "an upgraded"
+            self.upgrade = True
         else:
             self.price = self.buying[1]
+            self.upgrade = False
+
+        # So we can include upgrade cost.
+        self.crafttext = f"xxx **for** {self.price} {self.buying[0]}"
 
     def __repr__(self):
         text = (f"{' and '.join(self.selling_list)} **for** {self.price} {self.buying[0]}")
@@ -299,7 +320,7 @@ class Place:
     lookup = {}
 
     def __init__(self, name, coords, typev, trade_name="Traders"):
-        self.name = name.capitalize()
+        self.name = name
         self.coords = coords
         self.type = lookup_emoji(typev)
         self.trade_name = trade_name
@@ -359,3 +380,32 @@ class Vector:
         x = self.x * scalar
         y = self.y * scalar
         return Vector(x, y)
+
+
+class GameItemRate:
+    """
+    Object that defines the rate at which something
+    like feeding upgrades increases.
+    """
+    def __init__(self, ary, style=None):
+        self.array = ary
+        self.style = style
+
+    def at(self, num):
+        num = int(num)
+        if num > len(self.array) - 1:
+            if self.style == "linear":
+                return int(max([self.array[-1], self.style * (num)]))
+            else:
+                return int(self.array[-1])
+        else:
+            return int(self.array[num-1])
+
+
+petlevelrate = GameItemRate([1, 1, 1, 2, 2, 3, 4, 5, 6, 7, 8])
+b_upgraderate = GameItemRate([1, 1, 2, 2, 2, 2, 3, 4, 5, 6, 7, 8], 1)
+craft_upgraderate = GameItemRate([1, 2, 2, 2, 3, 3, 3, 4, 5, 6, 7, 8])
+shield_boostrate = GameItemRate([1, 2, 2.5, 3, 3.5, 3.5, 4, 4.5, 5, 5, 5.5, 6], 1/2)
+damage_boostrate = GameItemRate([1, 2, 2.5, 3, 3.5, 3.5, 4, 4.5, 5, 5, 5.5, 6], 1/2)
+animal_boostrate = GameItemRate([1, 2, 3, 3, 3.5, 3.5, 4, 4.5, 5, 5, 5.5, 6], 1)
+pet_scavengerate = GameItemRate([10, 9, 9, 8, 8, 8, 7, 7, 7, 6, 6, 5])
