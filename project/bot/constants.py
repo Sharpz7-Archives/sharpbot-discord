@@ -39,7 +39,7 @@ HOST = 149286699187437568  # TODO remove this!
 
 OFFICIAL_SERVERS = (
     468432687997124618,  # testing server
-    467653644179996683   # offical server
+    572866688802881560   # offical server
 )
 
 WATER_COLOUR = (0, 148, 255)  # blue
