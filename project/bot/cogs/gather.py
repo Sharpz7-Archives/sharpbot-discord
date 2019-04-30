@@ -7,7 +7,7 @@ from discord.ext import commands
 from bot.classes import materials
 from bot.constants import EXHAUST_MINE_CHANCE, MAX_MINE_AMOUNT, MINE_REACTION_TIMEOUT, WALKING, Emoji
 from bot.database import modify, query
-from bot.utils import create_embed
+from bot.utils import create_embed, utility_search
 
 
 class MineCommands(commands.Cog):
@@ -19,12 +19,12 @@ class MineCommands(commands.Cog):
     @commands.command(name='mine')
     async def mine(self, ctx):
         """Looks for ores to build and trade with!"""
-        await self.gather_api(ctx, Emoji.pickaxe, "mine")
+        await self.gather_api(ctx, Emoji.pickaxe, "mineable")
 
     @commands.command(name='chop')
     async def chop(self, ctx):
         """Find wood and other things to get started!"""
-        await self.gather_api(ctx, Emoji.axe, "chop")
+        await self.gather_api(ctx, Emoji.axe, "chopable")
 
     async def gather_api(self, ctx, emoji, mat_type):
         """Collect resources to build and trade with!"""
@@ -80,7 +80,7 @@ class MineCommands(commands.Cog):
                 self.mined.append(coords)
         else:
             found = "nothing!"
-            for ore in materials:
+            for ore in utility_search(materials, key=mat_type):
                 if randint(0, ore.rarity) == 0:
                     # Calculate the yield based on rarity.
                     amount = randint(1, MAX_MINE_AMOUNT) - ore.rarity

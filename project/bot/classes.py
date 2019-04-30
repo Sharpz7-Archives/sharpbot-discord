@@ -34,6 +34,9 @@ class Mats():
         self.rarity = rarity
         self.emoji = lookup_emoji(emoji)
         self.single = False
+        if utilities is None:
+            utilities = []
+        self.utilities = utilities
 
     def __repr__(self):
         text = (f"{self.emoji} {self.name}")
