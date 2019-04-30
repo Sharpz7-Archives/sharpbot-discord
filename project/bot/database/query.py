@@ -3,7 +3,7 @@ import random
 from rethinkdb import RethinkDB
 from rethinkdb.errors import ReqlNonExistenceError
 
-from bot.classes import Inv, materials
+from bot.classes import Inv, materials, pet_scavengerate
 from bot.constants import BOAT_TABLE, BUILD_TABLE, USER_TABLE, WATER_COLOUR
 from bot.utils import bot_conn, pixel
 from bot.errors import UserNotFoundError, BoatNotFoundError
@@ -37,6 +37,23 @@ async def user(author, *args):
         data = data[0]
 
     return data
+
+
+async def pet_ranuser(pet, author):
+    """
+    Try and find a user that the pet can find
+
+    Chance increases as pet level increases
+    """
+
+    author = str(author)
+    cursor = await r.table(USER_TABLE).run(bot_conn)
+    lvl = pet.get("lvl")
+    choice = pet_scavengerate.at(lvl)
+    async for doc in cursor:
+        user_not_pet_owner = (str(doc.get("id")) != author)
+        if random.randint(1, choice) == 1 and user_not_pet_owner:
+            return doc
 
 
 async def coords(author):

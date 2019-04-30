@@ -24,6 +24,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    depends_on:
+      - rdb
 
 volumes:
     rdb:

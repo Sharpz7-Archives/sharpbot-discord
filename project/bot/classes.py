@@ -392,15 +392,20 @@ class GameItemRate:
         self.style = style
 
     def at(self, num):
+        num = int(num)
         if num > len(self.array) - 1:
             if self.style == "linear":
-                return num
+                return int(max([self.array[-1], self.style * (num)]))
             else:
-                return self.array[-1]
+                return int(self.array[-1])
         else:
-            return self.array[num-1]
+            return int(self.array[num-1])
 
 
 petlevelrate = GameItemRate([1, 1, 1, 2, 2, 3, 4, 5, 6, 7, 8])
-b_upgraderate = GameItemRate([1, 1, 2, 2, 2, 2, 3, 4, 5, 6, 7, 8], "linear")
+b_upgraderate = GameItemRate([1, 1, 2, 2, 2, 2, 3, 4, 5, 6, 7, 8], 1)
 craft_upgraderate = GameItemRate([1, 2, 2, 2, 3, 3, 3, 4, 5, 6, 7, 8])
+shield_boostrate = GameItemRate([1, 2, 2.5, 3, 3.5, 3.5, 4, 4.5, 5, 5, 5.5, 6], 1/2)
+damage_boostrate = GameItemRate([1, 2, 2.5, 3, 3.5, 3.5, 4, 4.5, 5, 5, 5.5, 6], 1/2)
+animal_boostrate = GameItemRate([1, 2, 3, 3, 3.5, 3.5, 4, 4.5, 5, 5, 5.5, 6], 1)
+pet_scavengerate = GameItemRate([10, 9, 9, 8, 8, 8, 7, 7, 7, 6, 6, 5])

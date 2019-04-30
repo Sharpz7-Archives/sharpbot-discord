@@ -273,23 +273,6 @@ def utility_return(*args, key=None):
                 return item
 
 
-def clear_screen():
-    """
-    Clear the terminal's screen
-
-    If an unsupported OS is given, no command is run to prevent CLI errors
-    """
-    commands = {
-        "nt": "cls",
-        "posix": "clear"
-    }
-
-    # os.system succeeds without errors even when given a blank string
-    command = commands.get(os.name, "")
-
-    os.system(command)
-
-
 class Wilderness:
     name = "Wilderness"
 

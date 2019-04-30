@@ -3,7 +3,7 @@ import random as ran
 
 from discord.ext import commands
 
-from bot.classes import items, creatures, Fist
+from bot.classes import items, creatures, Fist, shield_boostrate, damage_boostrate, animal_boostrate
 from bot.database import query, modify
 from bot.utils import create_embed
 
@@ -185,14 +185,19 @@ class Duel:
         """Begin the fight! Turns are played until someone dies."""
         counter = 0
         while self.looping:
+            # Choose a random player to make a move
             attack = ran.choice([self.player1, self.player2])
+            # Make sure other player is the defender.
             defend = (self.player1 if attack != self.player1 else self.player2)
 
+            # Get all move values.
             damage, animal_dmg, weapon, animal = await self.do_move(attack, defend)
 
+            # Sleep so discord doesn't get angry.
             await asyncio.sleep(self.TURN_DURATION)
             counter += 1
 
+            # Nice little display!
             if animal_dmg != 0:
                 animal = (f"{defend.name} took an extra {animal_dmg} damage from a {animal}\n")
             else:
@@ -218,33 +223,47 @@ class Duel:
             embed = await create_embed(self.response, title, text)
             await self.response.edit(embed=embed)
 
+            # If defender is dead, trigger end sequence.
             if defend.health <= 0:
-                await self.death(defend.name)
+                await self.death(defend, winner=attack)
 
     async def do_move(self, attack, defend):
         """Let one player make their strike."""
 
+        # If all elements are empty.
         if (await self.check_equal(attack.weapons)):
+            # Make sure default "fist" item is used.
             weapon = Fist()
         else:
+            # choose weapon
             weapon = await self.weapon_find(attack.weapons)
+        # If the weapon isn't a damage item...
         if weapon.damage is None:
             damage = 0
         else:
             damage = await self.damage(attack, weapon)
 
+        # Get animal damage
         animal, animal_dmg = await self.animal(attack)
 
+        # Remove all damage
         defend.health -= (damage + animal_dmg)
         return damage, animal_dmg, weapon, animal
 
-    async def death(self, player):
+    async def death(self, loser, winner):
         """Oops, someone died. Stop the duel, and clean up the embed."""
 
         self.looping = False
-        title = f"{player} died!"
-        text = f"{player} was sent to sleep!"
+        title = f"{loser.name} died!"
+        text = (f"{loser.name} was sent to sleep, and {winner.name} collected their winnings!")
         embed = await create_embed(self.response, title, text)
+        # Divide up the losers inv.
+        for key, value in loser.inv.items():
+            if value != 0:
+                lost = int(value - value / ran.randint(3, 7))
+                await modify.inv(loser.id, key, -lost)
+                await modify.inv(winner.id, key, lost)
+
         await self.response.edit(embed=embed)
 
     async def weapon_find(self, weapons):
@@ -256,11 +275,15 @@ class Duel:
         weapon_name = ran.choice(weapons)
         return items.get(weapon_name)
 
-    async def health(self, player, weapon):
-        return weapon.health + ran.randint(0, 5)
-
     async def damage(self, player, weapon):
-        return (player.damage * weapon.damage) + ran.randint(0, 5)
+        """
+        Add damage, including weapon level.
+        """
+        if weapon.name == "Fist":
+            lvl = 1
+        else:
+            lvl = player.inv.get(weapon.name)
+        return (weapon.damage * damage_boostrate.at(lvl)) + ran.randint(0, 5)
 
     async def animal(self, player):
         """Get a player's pet name and damage (if they have one)."""
@@ -269,10 +292,14 @@ class Duel:
             damage = 0
         else:
             animal = creatures.get(player.pet.get("name"))
-            damage = animal.damage + ran.randint(0, 5)
+            lvl = player.pet.get("lvl")
+            damage = animal.damage * animal_boostrate.at(lvl) + ran.randint(0, 5)
         return animal, damage
 
     async def check_equal(self, lst):
+        """
+        Checks if all items in a list are the same.
+        """
         if len(lst) == 1:
             return False
         return lst[1:] == lst[:-1]
@@ -281,23 +308,23 @@ class Duel:
 class Player:
 
     DEFAULT_HEALTH = 40
-    DEFAULT_DAMAGE = 2
 
-    def __init__(self, player, name):
-        self.player = player
+    def __init__(self, data, name):
+        self.data = data
         self.name = name
         self.health = self.DEFAULT_HEALTH
-        self.damage = self.DEFAULT_DAMAGE
-        self.weapons = self.player['fight']
-        self.pet = self.player['pet']
-        self.id = self.player["id"]
+        self.weapons = self.data.get("fight")
+        self.pet = self.data.get('pet')
+        self.id = self.data.get("id")
+        self.inv = self.data.get('inventory')
         self.killed = []
-
         # Add any shield health
         for counter, name in enumerate(self.weapons):
             item = items.get(name)
             if item is not None and item.health:
-                self.health += item.health
+                # Include Level Boost.
+                lvl = self.inv.get(item.name)
+                self.health += item.health * shield_boostrate.at(lvl)
                 self.weapons[counter] = "Empty"
 
 
