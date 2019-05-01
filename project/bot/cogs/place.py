@@ -52,6 +52,11 @@ class PlaceCommands(commands.Cog):
 
     @places.command(aliases=["i"])
     async def info(self, ctx):
+        """
+        Get info on a nearby town!
+
+        Info like trades, quests and hired manpower can be found here!
+        """
         coords = await query.user(ctx.author.id, "coords")
         town = await at_town(coords)
         text = "To go to a town, try /help towns"

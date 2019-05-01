@@ -25,6 +25,7 @@ class BoatCommands(commands.Cog):
         /ship sail - sets your boat down to be boarded
         /ship board - lets your get on your boat
         /ship unboard - lets you get off your boat
+        /ship strip -  strip your boat into spare parts!
         """
         if ctx.invoked_subcommand is None:
             title = "BOAT HELP"
@@ -34,7 +35,8 @@ class BoatCommands(commands.Cog):
                 "You can find them at towns, do /help towns!\n\n"
                 "/ship sail - sets your boat down to be boarded\n"
                 "/ship board - lets your get on your boat\n"
-                "/ship unboard - lets you get off your boat```\n\n")
+                "/ship unboard - lets you get off your boat\n"
+                "/ship strip -  strip your boat into spare parts!```\n\n")
 
             text += "Looking for a ship? Try a town with /places"
 
@@ -100,7 +102,7 @@ class BoatCommands(commands.Cog):
         embed = await create_embed(ctx, title, text)
         await ctx.send(embed=embed)
 
-    @commands.command(name="strip")
+    @ship.command(name="strip")
     async def strip(self, ctx):
         """
         Strip your boat into spare parts!
@@ -142,7 +144,7 @@ class BoatCommands(commands.Cog):
                 embed = await create_embed(ctx, title, text)
                 await response.edit(embed=embed)
 
-    @commands.command(name="board")
+    @ship.command(name="board")
     async def board(self, ctx):
         """
         Get on your boat!

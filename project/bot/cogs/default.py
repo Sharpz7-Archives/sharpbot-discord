@@ -72,9 +72,9 @@ class DefaultCommands(commands.Cog):
 
         user = self.bot.get_user(ctx.author.id)
         title = "Credits"
-        text = ("Major thanks to the developers of Sharpbot, if you would like "
-                "to support us here are links to invite Sharpbot to your "
-                "server, Sharpbot's server and to everyone that helped "
+        text = ("Major thanks to the developers of TravellerRPG, if you would like "
+                "to support us here are links to invite TravellerRPG to your "
+                "server, TravellerRPG's server and to everyone that helped "
                 "contribute! :heart:")
 
         embed = await create_embed(ctx, title, text)

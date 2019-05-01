@@ -27,7 +27,7 @@ def get_prefix(bot, message):
 
 bot = commands.Bot(
     command_prefix=get_prefix,
-    description='SharpBot')
+    description='TravellerRPG')
 
 with open(COGS_FILE, "r") as ymlfile:
     cogs_data = yaml.safe_load(ymlfile)
@@ -51,7 +51,7 @@ async def on_ready():
     print(f"\n\n"
           f"Logged in as: {bot.user.name} - {bot.user.id}\n"
           f"Discord Version: 1.0.0a\n"
-          f"Sharpbot Version: 1.0.1a\n"
+          f"TravellerRPG Version: 1.0.1a\n"
           )
 
     bot.appinfo = await bot.application_info()

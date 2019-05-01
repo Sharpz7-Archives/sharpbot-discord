@@ -4,7 +4,7 @@ from random import randint
 from discord.errors import Forbidden
 from discord.ext import commands
 
-from bot.classes import materials
+from bot.classes import materials, items
 from bot.constants import EXHAUST_MINE_CHANCE, MAX_MINE_AMOUNT, MINE_REACTION_TIMEOUT, WALKING, Emoji
 from bot.database import modify, query
 from bot.utils import create_embed, utility_search
@@ -19,12 +19,34 @@ class MineCommands(commands.Cog):
     @commands.command(name='mine')
     async def mine(self, ctx):
         """Looks for ores to build and trade with!"""
-        await self.gather_api(ctx, Emoji.pickaxe, "mineable")
+
+        in_boat, inv = await query.user(ctx.author.id, "in_boat", "inventory")
+        if in_boat:
+            title = "You can not mine on water, silly!"
+            text = "Do /move shore to go to land!"
+        for tool in utility_search(items, key="mining"):
+            if tool in inv:
+                await self.gather_api(ctx, Emoji.pickaxe, "mineable")
+                return
+        else:
+            title = "You do not have a tool to mine with!"
+            text = "Try /craft to make yourself a pickaxe!"
+
+        embed = await create_embed(ctx, title, text)
+        await ctx.send(embed=embed)
 
     @commands.command(name='chop')
     async def chop(self, ctx):
         """Find wood and other things to get started!"""
-        await self.gather_api(ctx, Emoji.axe, "chopable")
+
+        in_boat = await query.user(ctx.author.id, "in_boat")
+        if in_boat:
+            title = "You can not mine on water, silly!"
+            text = "Do /move shore to go to land!"
+            embed = await create_embed(ctx, title, text)
+            await ctx.send(embed=embed)
+        else:
+            await self.gather_api(ctx, Emoji.axe, "chopable")
 
     async def gather_api(self, ctx, emoji, mat_type):
         """Collect resources to build and trade with!"""
