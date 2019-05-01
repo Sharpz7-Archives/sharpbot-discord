@@ -30,7 +30,7 @@ async def coord(author, coords):
     await r.table(USER_TABLE).get(author).update(data).run(bot_conn)
 
 
-async def trade(author, trade, times, inventory):
+async def trade(author, trade, times, inventory=None):
     """
     Remove and add items to a user's inventory,
     depending on the trade specified

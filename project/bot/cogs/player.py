@@ -201,7 +201,7 @@ class PlayerCommands(commands.Cog):
         return "\n\n".join(display)
 
     @commands.command(aliases=["look"])
-    @commands.cooldown(1, 1, commands.BucketType.user)
+    @commands.cooldown(1, 60*5, commands.BucketType.user)
     async def find(self, ctx):
         """Find your own pets!
         Has a 2 min cooldown!"""
@@ -209,7 +209,7 @@ class PlayerCommands(commands.Cog):
         # Set the default embed content.
         title = "You found nothing!"
         text = ("Try again with /find\n"
-                "*REMEMBER: There is a 2 min cooldown on this!*")
+                "*REMEMBER: There is a 5 min cooldown on this!*")
 
         in_boat, pet, inv = await query.user(
             ctx.author.id, "in_boat", "pet", "inventory")
@@ -217,10 +217,10 @@ class PlayerCommands(commands.Cog):
         if in_boat:
             return await ctx.send("You can not look for stuff in the sea!")
 
-        for item in utility_search(creatures, plants, key="Find"):
+        for item in utility_search(creatures, plants, key="findable"):
             # Deal with pets, animals and non-single items
             if randint(1, item.rarity + 1) == 1:
-                if item.name == pet["name"]:
+                if item.name == pet.get("name"):
                     await modify.pet_lvl(ctx.author.id)
                     title = "You found a magic spell!"
                     text = f"It leveled up your {item}"
