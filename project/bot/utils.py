@@ -37,7 +37,7 @@ async def create_embed(ctx, title, text):
         title=title,
         description=text,
         colour=color)
-    embed.set_footer(text="Created by the Sharpbot Dev Team `/about`")
+    embed.set_footer(text="Created by the Sharpbot Dev Team (/about)")
 
     return embed
 

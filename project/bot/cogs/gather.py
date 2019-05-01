@@ -93,7 +93,7 @@ class MineCommands(commands.Cog):
                     break
 
             title = f'Looked for materials and found {found}'
-            text = ("Try again with /mine!\n"
+            text = ("Find more materials with /mine! or /chop!\n"
                     "*Click the reaction button below to mine again!*")
 
         embed = await create_embed(ctx, title, text)
