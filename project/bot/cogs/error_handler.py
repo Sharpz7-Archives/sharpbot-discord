@@ -19,7 +19,13 @@ class ErrorHandler(commands.Cog):
         if ctx.command is None:
             return
 
-        name = f"{ctx.command.full_parent_name} {ctx.command.name}"
+        # If command has a parent name...
+        try:
+            name = f"{ctx.command.full_parent_name} {ctx.command.name}"
+
+        # Otherwise just use the command name.
+        except AttributeError:
+            name = ctx.command.name
 
         # get the original exception
         error = getattr(error, "original", error)
