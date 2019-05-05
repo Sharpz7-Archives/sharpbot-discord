@@ -133,9 +133,13 @@ async def move_direction(direction, amount, x, y):
     # Calculate all the offsets, then choose the right one.
     solve = {
         "left": (x - amount, y),
+        "west": (x - amount, y),
         "right": (x + amount, y),
+        "east": (x + amount, y),
         "down": (x, y + amount),
+        "south": (x, y + amount),
         "up": (x, y - amount),
+        "north": (x, y - amount),
         "shore": (await nearest_shore_point(x, y)),
     }
     try:

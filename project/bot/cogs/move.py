@@ -63,7 +63,7 @@ class MoveCommands(commands.Cog):
         There a lots of ways to use this command: e.g
 
         /move 400 400 - Move by coordinate
-        /move saint python - Move by location
+        /move python palace - Move by location
         /move left/up/right/down - Move by direction.
         /move shore - Takes you to the nearst shoreline
 
