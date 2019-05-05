@@ -7,10 +7,27 @@ import yaml
 from PIL import Image, ImageDraw, ImageFont
 
 from bot.classes import Place
-from bot.cogs import (animal, boat, build, default, fight, gather, move, owner,
-                      place, player, error_handler)
-from bot.constants import (FONT_FILE, MAP_FILE, SHORE, SHORE_COLOUR,
-                           TEMPLATE_FILE, ARTIFACT_FOLDER)
+from bot.cogs import (
+    animal,
+    boat,
+    build,
+    default,
+    fight,
+    gather,
+    move,
+    owner,
+    place,
+    player,
+    error_handler,
+)
+from bot.constants import (
+    FONT_FILE,
+    MAP_FILE,
+    SHORE,
+    SHORE_COLOUR,
+    TEMPLATE_FILE,
+    ARTIFACT_FOLDER,
+)
 from bot.errors import TestFailError
 from bot.utils import rgb_data
 
@@ -41,9 +58,7 @@ class Guild:
 
     def __init__(self):
         self.id = 101
-        self.roles = [
-            Roles("Announcement"),
-        ]
+        self.roles = [Roles("Announcement")]
 
 
 class Bot:
@@ -58,15 +73,11 @@ class Bot:
             for town in Place.lookup.values():
                 x1, y1 = town.coords
 
-                draw.text(
-                    (x1, y1),
-                    town.name,
-                    font=font,
-                    fill="white")
+                draw.text((x1, y1), town.name, font=font, fill="white")
 
             im.save(MAP_FILE)
 
-        #  Sets world border
+            #  Sets world border
             self.width, self.height = im.size
             # Ensures pixel is in image at all times
             self.width -= 1
@@ -169,7 +180,7 @@ def cog_find(name):
         "move": move.MoveCommands,
         "owner": owner.OwnerCommands,
         "place": place.PlaceCommands,
-        "player": player.PlayerCommands
+        "player": player.PlayerCommands,
     }
     return data.get(name)
 
@@ -228,9 +239,12 @@ class Test:
 
         except Exception as e:
             handled = await error_handler.ErrorHandler.on_command_error(
-                instance(bot), self.ctx, e)
+                instance(bot), self.ctx, e
+            )
             if not handled:
-                print(f"\nThere was a unexpected error @ {self.ctx.stage}! ({type(e).__name__})\n")
+                print(
+                    f"\nThere was a unexpected error @ {self.ctx.stage}! ({type(e).__name__})\n"
+                )
                 traceback.print_exc()
                 print("Skipping to post.\n")
                 failed = True
@@ -238,7 +252,9 @@ class Test:
                 failed = False
 
         if failed:
-            await self.ctx.log(f"STAGE {self.ctx.stage} FAILED\n ({traceback.print_exc()})")
+            await self.ctx.log(
+                f"STAGE {self.ctx.stage} FAILED\n ({traceback.print_exc()})"
+            )
 
         # Removes and logs the players data
         # This will be stored in its artifact
@@ -293,7 +309,7 @@ class Test:
         for counter, option in enumerate(options):
             params = list(func.clean_params.values())
             if len(params) > 2:
-                instance = params[counter+1].annotation
+                instance = params[counter + 1].annotation
                 if instance != inspect._empty:
                     options[counter] = instance(option)
 
@@ -306,6 +322,7 @@ class File:
 
     Allows for multiple tests in the same file.
     """
+
     def __init__(self):
         self.all_tests = []
 

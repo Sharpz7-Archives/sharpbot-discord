@@ -19,46 +19,53 @@ class ErrorHandler(commands.Cog):
         if ctx.command is None:
             return
 
-        name = ctx.command.name
+        name = f"{ctx.command.full_parent_name} {ctx.command.name}"
 
         # get the original exception
-        error = getattr(error, 'original', error)
+        error = getattr(error, "original", error)
 
         if isinstance(error, commands.errors.CommandNotFound):
-            error_msg = error.args[0].replace("\"", "`")
+            error_msg = error.args[0].replace('"', "`")
 
-            await ctx.send(f"{error_msg}. Try using `/help` to see the existing "
-                           f"commands.")
+            await ctx.send(
+                f"{error_msg}. Try using `/help` to see the existing " f"commands."
+            )
             return True
 
         if isinstance(error, commands.errors.CommandOnCooldown):
             cooldown = round(error.retry_after)
 
-            await ctx.send(f"`{name}` is on cooldown! You can try again in "
-                           f"{cooldown}s.")
+            await ctx.send(
+                f"`/{name}` is on cooldown! You can try again in " f"{cooldown}s."
+            )
             return True
 
         if isinstance(error, commands.errors.MissingRequiredArgument):
             param = str(error.param).title()
 
-            await ctx.send(f"`{param}` is missing from `{name}` - try `/help "
-                           f"{name}` for more information.")
+            await ctx.send(
+                f"`{param}` is missing from `/{name}` - try `/help "
+                f"{name}` for more information."
+            )
             return True
 
         if isinstance(error, commands.errors.BadArgument):
-            await ctx.send(f"That is not how you use `{name}`. Try using "
-                           f"`/help {name}` to see how to use it!")
+            await ctx.send(
+                f"That is not how you use `/{name}`. Try using "
+                f"`/help {name}` to see how to use it!"
+            )
             return True
 
         if isinstance(error, commands.errors.NoPrivateMessage):
-            await ctx.send(f"You cannot use {name} in DMs; you must only use "
-                           f"it within a server that we (you and me) are in!")
+            await ctx.send(
+                f"You cannot use /`{name}` in DMs; you must only use "
+                f"it within a server that we (you and me) are in!"
+            )
             return True
 
         if isinstance(error, UserNotFoundError):
             title = "You do not exist yet!"
-            text = ("But we can change that. Use `/start` to create your "
-                    "character.")
+            text = "But we can change that. Use `/start` to create your " "character."
             embed = await create_embed(ctx, title, text)
             await ctx.send(embed=embed)
             return True

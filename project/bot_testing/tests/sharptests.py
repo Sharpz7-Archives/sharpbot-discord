@@ -5,9 +5,9 @@ def setup(file):
         ("owner", "/insta move shore"),
         ("boat", "/ship sail"),
         ("boat", "/ship info", ("keynotinmessage", "You don't have a boat!")),
-        ("boat", "/board"),
+        ("boat", "/ship board"),
         ("owner", "/insta inv 1 rod"),
-        ("boat", "/fish")
+        ("boat", "/fish"),
     ]
 
     file.create_test("boat-test", commands=commands)
@@ -28,7 +28,7 @@ def setup(file):
         ("player", "/inv", ("keyinmessage", "1", "Cat", "10", "Acorn")),
         ("animal", "/pet create cat"),
         ("animal", "/pet feed acorn"),
-        ("player", "/inv", ("keyinmessage", "9", "Acorn"))
+        ("player", "/inv", ("keyinmessage", "9", "Acorn")),
     ]
 
     file.create_test("feed-test", commands=commands)
@@ -42,9 +42,6 @@ def setup(file):
 
     file.create_test("default-test", commands=commands)
 
-    commands = [
-        ("player", "/start"),
-        ("owner", "/insta move pthon palace")
-    ]
+    commands = [("player", "/start"), ("owner", "/insta move pthon palace")]
 
     file.create_test("move-test", commands=commands)

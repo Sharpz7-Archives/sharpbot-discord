@@ -20,7 +20,7 @@ if os.environ.get("CICD", "FALSE") == "TRUE":
         data = yaml.safe_load(f)
 
 
-class Mats():
+class Mats:
     """
     All the materials you can mine.
 
@@ -39,7 +39,7 @@ class Mats():
         self.utilities = utilities
 
     def __repr__(self):
-        text = (f"{self.emoji} {self.name}")
+        text = f"{self.emoji} {self.name}"
         return text
 
 
@@ -58,7 +58,9 @@ class Items:
 
     lookup = {}
 
-    def __init__(self, name, emoji, rarity=None, damage=None, health=None, utilities=None):
+    def __init__(
+        self, name, emoji, rarity=None, damage=None, health=None, utilities=None
+    ):
         self.name = name
         self.emoji = lookup_emoji(emoji)
         self.damage = damage
@@ -70,7 +72,7 @@ class Items:
         self.utilities = utilities
 
     def __repr__(self):
-        text = (f"{self.emoji} {self.name}")
+        text = f"{self.emoji} {self.name}"
         return text
 
 
@@ -100,7 +102,16 @@ class Creatures:
 
     lookup = {}
 
-    def __init__(self, name, emoji, rarity=None, single=True, damage=None, health=None, utilities=False):
+    def __init__(
+        self,
+        name,
+        emoji,
+        rarity=None,
+        single=True,
+        damage=None,
+        health=None,
+        utilities=False,
+    ):
         self.name = name.capitalize()
         self.emoji = lookup_emoji(emoji)
         self.damage = damage
@@ -110,7 +121,7 @@ class Creatures:
         self.utilities = utilities
 
     def __repr__(self):
-        text = (f"{self.emoji} {self.name}")
+        text = f"{self.emoji} {self.name}"
         return text
 
 
@@ -138,7 +149,7 @@ class Plants:
         self.utilities = ["food"]
 
     def __repr__(self):
-        text = (f"{self.emoji} {self.name}")
+        text = f"{self.emoji} {self.name}"
         return text
 
 
@@ -165,7 +176,7 @@ class Boats:
         self.rarity = rarity
 
     def __repr__(self):
-        text = (f"{self.emoji} {self.name}")
+        text = f"{self.emoji} {self.name}"
         return text
 
 
@@ -235,7 +246,7 @@ class Building:
         self.mat = inv_find(mat)
 
     def __repr__(self):
-        text = (f"{self.emoji} {self.name}")
+        text = f"{self.emoji} {self.name}"
         return text
 
 
@@ -279,7 +290,9 @@ class Trade:
         self.crafttext = f"xxx **for** {self.price} {self.buying[0]}"
 
     def __repr__(self):
-        text = (f"{' and '.join(self.selling_list)} **for** {self.price} {self.buying[0]}")
+        text = (
+            f"{' and '.join(self.selling_list)} **for** {self.price} {self.buying[0]}"
+        )
         return text
 
 
@@ -330,7 +343,7 @@ class Place:
         self.trades = trade_set(trade_name, 4)
 
     def __repr__(self):
-        text = (f"{self.type} {self.name}")
+        text = f"{self.type} {self.name}"
         return text
 
 
@@ -346,15 +359,13 @@ class Vector:
 
     Supports addition, subtraction and multiplication.
     """
+
     def __init__(self, x, y):
         self.x = int(x)
         self.y = int(y)
 
     def __repr__(self):
-        text = (
-            f"[{int(self.x)}]\n"
-            f"[{int(self.y)}]"
-            )
+        text = f"[{int(self.x)}]\n" f"[{int(self.y)}]"
         return text
 
     def __sub__(self, vector):
@@ -373,7 +384,7 @@ class Vector:
         return Vector(x, y)
 
     def __abs__(self):
-        return math.sqrt(self.x**2 + self.y**2)
+        return math.sqrt(self.x ** 2 + self.y ** 2)
 
     def __iter__(self):
         yield self.x
@@ -390,6 +401,7 @@ class GameItemRate:
     Object that defines the rate at which something
     like feeding upgrades increases.
     """
+
     def __init__(self, ary, style=None):
         self.array = ary
         self.style = style
@@ -402,13 +414,13 @@ class GameItemRate:
             else:
                 return int(self.array[-1])
         else:
-            return int(self.array[num-1])
+            return int(self.array[num - 1])
 
 
 petlevelrate = GameItemRate([1, 1, 1, 2, 2, 3, 4, 5, 6, 7, 8])
 b_upgraderate = GameItemRate([1, 1, 2, 2, 2, 2, 3, 4, 5, 6, 7, 8], 1)
 craft_upgraderate = GameItemRate([1, 2, 2, 2, 3, 3, 3, 4, 5, 6, 7, 8])
-shield_boostrate = GameItemRate([1, 2, 2.5, 3, 3.5, 3.5, 4, 4.5, 5, 5, 5.5, 6], 1/2)
-damage_boostrate = GameItemRate([1, 2, 2.5, 3, 3.5, 3.5, 4, 4.5, 5, 5, 5.5, 6], 1/2)
+shield_boostrate = GameItemRate([1, 2, 2.5, 3, 3.5, 3.5, 4, 4.5, 5, 5, 5.5, 6], 1 / 2)
+damage_boostrate = GameItemRate([1, 2, 2.5, 3, 3.5, 3.5, 4, 4.5, 5, 5, 5.5, 6], 1 / 2)
 animal_boostrate = GameItemRate([1, 2, 3, 3, 3.5, 3.5, 4, 4.5, 5, 5, 5.5, 6], 1)
 pet_scavengerate = GameItemRate([10, 9, 9, 8, 8, 8, 7, 7, 7, 6, 6, 5])

@@ -11,11 +11,10 @@ from bot.utils import at_town, create_embed, find_trade, utility_search, upgrade
 
 
 class PlayerCommands(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(aliases=['begin'])
+    @commands.command(aliases=["begin"])
     @commands.guild_only()
     async def start(self, ctx):
         """Start your journey in Sharpe!"""
@@ -44,7 +43,7 @@ class PlayerCommands(commands.Cog):
         embed = await create_embed(ctx, title, text)
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['inventory', 'items', 'collection'])
+    @commands.command(aliases=["inventory", "items", "collection"])
     async def inv(self, ctx):
         """Shows you your inventory!
         You can use items here at shops in towns
@@ -54,14 +53,16 @@ class PlayerCommands(commands.Cog):
         user_inv = await query.user_parse(ctx.author.id)
         pet_inv = await query.pet_parse(ctx.author.id)
 
-        user_inv = '\n'.join(user_inv)
-        pet_inv = '\n'.join(pet_inv)
-        text = (f"__**Inventory**__\n\n"
-                f"{user_inv}\n\n"
-                f"__**Pet**__\n\n"
-                f"{pet_inv}\n\n")
+        user_inv = "\n".join(user_inv)
+        pet_inv = "\n".join(pet_inv)
+        text = (
+            f"__**Inventory**__\n\n"
+            f"{user_inv}\n\n"
+            f"__**Pet**__\n\n"
+            f"{pet_inv}\n\n"
+        )
 
-        title = '**Your Inventory:**'
+        title = "**Your Inventory:**"
         embed = await create_embed(ctx, title, text)
         await ctx.send(embed=embed)
 
@@ -116,7 +117,8 @@ class PlayerCommands(commands.Cog):
                 "/town info shows you the trades available\n"
                 "/trade [trade number] [number of trades], e.g\n\n"
                 "`/trade 1 5` will do the first trade 5 times\n\n"
-                "```YOU MUST BE IN A TOWN TO TRADE. /help towns```")
+                "```YOU MUST BE IN A TOWN TO TRADE. /help towns```"
+            )
 
             embed = await create_embed(ctx, title, text)
             await ctx.send(embed=embed)
@@ -201,18 +203,18 @@ class PlayerCommands(commands.Cog):
         return "\n\n".join(display)
 
     @commands.command(aliases=["look"])
-    @commands.cooldown(1, 60*5, commands.BucketType.user)
+    @commands.cooldown(1, 60 * 5, commands.BucketType.user)
     async def find(self, ctx):
         """Find your own pets!
         Has a 2 min cooldown!"""
 
         # Set the default embed content.
         title = "You found nothing!"
-        text = ("Try again with /find\n"
-                "*REMEMBER: There is a 5 min cooldown on this!*")
+        text = "Try again with /find\n" "*REMEMBER: There is a 5 min cooldown on this!*"
 
         in_boat, pet, inv = await query.user(
-            ctx.author.id, "in_boat", "pet", "inventory")
+            ctx.author.id, "in_boat", "pet", "inventory"
+        )
 
         if in_boat:
             return await ctx.send("You can not look for stuff in the sea!")
@@ -234,6 +236,9 @@ class PlayerCommands(commands.Cog):
                     await modify.inv(ctx.author.id, item.name, 1)
                     title = f"You found a {item}"
                     text = "Use this command again with /find!"
+                    # if it is a animal
+                    if creatures.get(item.name):
+                        text = "Maybe try making it your pet with `/help pet!`"
 
         embed = await create_embed(ctx, title, text)
         await ctx.send(embed=embed)

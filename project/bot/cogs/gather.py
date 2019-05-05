@@ -5,23 +5,28 @@ from discord.errors import Forbidden
 from discord.ext import commands
 
 from bot.classes import materials
-from bot.constants import EXHAUST_MINE_CHANCE, MAX_MINE_AMOUNT, MINE_REACTION_TIMEOUT, WALKING, Emoji
+from bot.constants import (
+    EXHAUST_MINE_CHANCE,
+    MAX_MINE_AMOUNT,
+    MINE_REACTION_TIMEOUT,
+    WALKING,
+    Emoji,
+)
 from bot.database import modify, query
 from bot.utils import create_embed, utility_search
 
 
 class MineCommands(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
         self.mined = []
 
-    @commands.command(name='mine')
+    @commands.command(name="mine")
     async def mine(self, ctx):
         """Looks for ores to build and trade with!"""
         await self.gather_api(ctx, Emoji.pickaxe, "mineable")
 
-    @commands.command(name='chop')
+    @commands.command(name="chop")
     async def chop(self, ctx):
         """Find wood and other things to get started!"""
         await self.gather_api(ctx, Emoji.axe, "chopable")
@@ -45,9 +50,8 @@ class MineCommands(commands.Cog):
         async def re_run():
             try:
                 reaction, _ = await self.bot.wait_for(
-                    'reaction_add',
-                    timeout=MINE_REACTION_TIMEOUT,
-                    check=checker)
+                    "reaction_add", timeout=MINE_REACTION_TIMEOUT, check=checker
+                )
 
             # If the user doesn't mine for a while, give up.
             except asyncio.TimeoutError:
@@ -74,7 +78,7 @@ class MineCommands(commands.Cog):
 
         # If the mine is or has become empty, stop here.
         if randint(0, EXHAUST_MINE_CHANCE) == 0 or coords in self.mined:
-            title = 'There are no more materials here!'
+            title = "There are no more materials here!"
             text = "Try /move [direction] !"
             if coords not in self.mined:
                 self.mined.append(coords)
@@ -92,9 +96,11 @@ class MineCommands(commands.Cog):
                     await modify.inv(ctx.author.id, ore.name, amount)
                     break
 
-            title = f'Looked for materials and found {found}'
-            text = ("Find more materials with /mine! or /chop!\n"
-                    "*Click the reaction button below to mine again!*")
+            title = f"Looked for materials and found {found}"
+            text = (
+                "Find more materials with /mine! or /chop!\n"
+                "*Click the reaction button below to mine again!*"
+            )
 
         embed = await create_embed(ctx, title, text)
         return embed

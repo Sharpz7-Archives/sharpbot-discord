@@ -13,7 +13,6 @@ from bot.utils import create_embed, is_owner, get_coords
 
 
 class OwnerCommands(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
 
@@ -29,7 +28,7 @@ class OwnerCommands(commands.Cog):
         with open(file, "w") as ymlfile:
             yaml.dump(data, ymlfile, default_flow_style=False)
 
-    @commands.command(name='load', hidden=True)
+    @commands.command(name="load", hidden=True)
     @commands.check(is_owner)
     async def loadc(self, ctx, name):
         """Load a module.
@@ -42,11 +41,11 @@ class OwnerCommands(commands.Cog):
             self.write(data, COGS_FILE)
 
         except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
+            await ctx.send(f"**`ERROR:`** {type(e).__name__} - {e}")
         else:
-            await ctx.send('**`SUCCESS`**')
+            await ctx.send("**`SUCCESS`**")
 
-    @commands.command(name='unload', hidden=True)
+    @commands.command(name="unload", hidden=True)
     @commands.check(is_owner)
     async def unloadc(self, ctx, name):
         """Unload a module.
@@ -60,11 +59,11 @@ class OwnerCommands(commands.Cog):
             self.write(data, COGS_FILE)
 
         except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
+            await ctx.send(f"**`ERROR:`** {type(e).__name__} - {e}")
         else:
-            await ctx.send('**`SUCCESS`**')
+            await ctx.send("**`SUCCESS`**")
 
-    @commands.command(name='reload', aliases=["r"], hidden=True)
+    @commands.command(name="reload", aliases=["r"], hidden=True)
     @commands.check(is_owner)
     async def reloadc(self, ctx, name):
         """Reload a module.
@@ -74,9 +73,9 @@ class OwnerCommands(commands.Cog):
             self.bot.unload_extension(f"bot.cogs.{name}")
             self.bot.load_extension(f"bot.cogs.{name}")
         except Exception as e:
-            await ctx.send(f'**`ERROR:`** {type(e).__name__} - {e}')
+            await ctx.send(f"**`ERROR:`** {type(e).__name__} - {e}")
         else:
-            await ctx.send('**`SUCCESS`**')
+            await ctx.send("**`SUCCESS`**")
 
     @commands.command(name="insta", hidden=True)
     @commands.check(is_owner)
@@ -120,7 +119,7 @@ class OwnerCommands(commands.Cog):
         await modify.purge(member.id)
         await ctx.send(content="`Done!`")
 
-    @commands.command(name='show', hidden=True)
+    @commands.command(name="show", hidden=True)
     @commands.check(is_owner)
     async def show(self, ctx, member: discord.Member = None):
         """Show all the data about a user."""
@@ -132,9 +131,11 @@ class OwnerCommands(commands.Cog):
         boat_data = await query.boat(member.id)
 
         title = f"{member}'s' data:"
-        text = (f"{pformat(user_data)}\n\n"
-                f"{pformat(building_data)}\n\n"
-                f"{pformat(boat_data)}\n\n")
+        text = (
+            f"{pformat(user_data)}\n\n"
+            f"{pformat(building_data)}\n\n"
+            f"{pformat(boat_data)}\n\n"
+        )
         embed = await create_embed(ctx, title, text)
         await ctx.send(embed=embed)
 
@@ -149,11 +150,13 @@ class OwnerCommands(commands.Cog):
 
         data = await self.bot.get_user_info(user.id)
         title = f"**All data on user {data.name}**"
-        text = (f"**Full Name:** {data}\n"
-                f"**Joined:** {str(data.created_at)[:-10]}\n"
-                f"**Avatar Url:** {data.avatar_url}\n"
-                f"**ID:** {data.id}\n"
-                f"**Original Discord Avatar color:** {data.default_avatar.name}\n")
+        text = (
+            f"**Full Name:** {data}\n"
+            f"**Joined:** {str(data.created_at)[:-10]}\n"
+            f"**Avatar Url:** {data.avatar_url}\n"
+            f"**ID:** {data.id}\n"
+            f"**Original Discord Avatar color:** {data.default_avatar.name}\n"
+        )
         embed = await create_embed(ctx, title, text)
         embed.set_thumbnail(url=data.avatar_url)
         await ctx.send(embed=embed)
@@ -162,9 +165,9 @@ class OwnerCommands(commands.Cog):
     @commands.check(is_owner)
     async def debug(self, ctx):
         await ctx.send("`Waiting for debug attach...`")
-        ptvsd.enable_attach(address=('0.0.0.0', 3000))
+        ptvsd.enable_attach(address=("0.0.0.0", 3000))
         ptvsd.wait_for_attach()
-        await ctx.send('`Debugger is attached!`')
+        await ctx.send("`Debugger is attached!`")
 
     @commands.command(hidden=True)
     @commands.check(is_owner)
