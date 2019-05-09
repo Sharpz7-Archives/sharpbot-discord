@@ -19,9 +19,14 @@ for item in names:
 
 
 def run_tests():
-    # Create artifacts folder
+    # Remove old artifacts folder
     try:
         shutil.rmtree(ARTIFACT_FOLDER)
+    except FileNotFoundError:
+        pass
+
+    # Create artifacts folder
+    try:
         os.mkdir(ARTIFACT_FOLDER)
     except FileExistsError:
         pass
