@@ -193,6 +193,7 @@ class Test:
         self.commands = commands
         self.nopost = nopost
         self.artifacts = []
+        self.error = None
 
     async def runner(self):
         """Runs all the tasks specified in the test_file"""
@@ -230,30 +231,30 @@ class Test:
                 if fails:
                     fails.run_all(self.ctx.last_log)
             print("DONE!\n")
-            failed = False
 
-        except KeyboardInterrupt:
+        except KeyboardInterrupt as e:
             print("Aborted. Skipping to post...")
             traceback.print_exc()
-            failed = True
+            self.error = e
 
         except Exception as e:
             handled = await error_handler.ErrorHandler.on_command_error(
                 instance(bot), self.ctx, e
             )
             if not handled:
+                print("\n====================")
                 print(
-                    f"\nThere was a unexpected error @ {self.ctx.stage}! ({type(e).__name__})\n"
+                    f"ERROR @ {self.ctx.stage} of {self.name}! (Command: {self.ctx.command.name})\n"
                 )
-                traceback.print_exc()
+                print(f"Error: {e}")
+                print("====================\n\n")
                 print("Skipping to post.\n")
-                failed = True
-            else:
-                failed = False
+                self.error = e
 
-        if failed:
+        if self.error:
+            self.ctx.stage = "Error"
             await self.ctx.log(
-                f"STAGE {self.ctx.stage} FAILED\n ({traceback.print_exc()})"
+                f"{traceback.format_tb(self.error.__traceback__)}"
             )
 
         # Removes and logs the players data
@@ -270,7 +271,7 @@ class Test:
         with open(f"{ARTIFACT_FOLDER}/{self.name}.yml", "w+") as ymlFile:
             yaml.dump(self.ctx.artifacts, ymlFile, default_flow_style=False)
 
-        if failed:
+        if self.error:
             print("A test failed. Exiting...")
             exit(1)
 
@@ -280,6 +281,7 @@ class Test:
 
         Also detects 1 level of subcommands and changes the command accordingly
         """
+
         if name.startswith("/"):
             name = name[1:]
         func = getattr(instance, name, None)
@@ -302,10 +304,19 @@ class Test:
             self.ctx.invoked_subcommand = True
             if options[0] in group_command:
                 func, *options = options
-                return group_command[func], options
+                func = group_command[func]
+                options = await self.convert_options(options, func)
+                return func, options
 
-        # Makes sure all args are converted using simple discord conversions.
-        # Only basic python classes are supported
+        options = await self.convert_options(options, func)
+        return func, options
+
+    async def convert_options(self, options, func):
+        """
+        Makes sure all args are converted using simple discord conversions.
+        Only basic python classes are supported
+        """
+
         for counter, option in enumerate(options):
             params = list(func.clean_params.values())
             if len(params) > 2:
@@ -313,7 +324,7 @@ class Test:
                 if instance != inspect._empty:
                     options[counter] = instance(option)
 
-        return func, options
+        return options
 
 
 class File:
@@ -372,7 +383,7 @@ class KeyInMessage(Fail):
     def run(self, message):
         for key in self.keys:
             if key not in message:
-                raise TestFailError("Not all keys were found in message!")
+                raise TestFailError(f"Not all keys were found in message! ({key})")
 
 
 class KeyNotInMessage(Fail):
@@ -382,4 +393,4 @@ class KeyNotInMessage(Fail):
     def run(self, message):
         for key in self.keys:
             if key in message:
-                raise TestFailError("A banned key was found in message!")
+                raise TestFailError(f"A banned key was found in message! ({key})")

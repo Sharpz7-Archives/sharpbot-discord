@@ -31,7 +31,7 @@ PREFIXES = ["/", "!/"]
 
 SEA_CHECKS = 20
 
-HOST = 149286699187437568  # TODO remove this!
+HOST = 265868669853106176  # TODO remove this!
 
 OFFICIAL_SERVERS = (
     468432687997124618,  # testing server

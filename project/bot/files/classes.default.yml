@@ -8,7 +8,7 @@ items:
     Shield:
         name: Shield
         emoji: SHIELD
-        damage: 5
+        health: 15
         rarity: 3
         utilities:
             - findable
@@ -38,11 +38,10 @@ boats:
 
 trades:
     # If this is a crafted item, it MUST be upgraded item first
-    wood_metal:
+    wood_wood:
         selling:
             - [Wood, 5]
         buying: [Wood, 1]
-        category: Lumberjack
 
 places:
     Python Palace:

@@ -217,6 +217,7 @@ class PlayerCommands(commands.Cog):
         )
 
         if in_boat:
+            self.bot.get_command("find").reset_cooldown(ctx)
             return await ctx.send("You can not look for stuff in the sea!")
 
         for item in utility_search(creatures, plants, key="findable"):

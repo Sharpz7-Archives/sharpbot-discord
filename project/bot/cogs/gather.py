@@ -24,12 +24,28 @@ class MineCommands(commands.Cog):
     @commands.command(name="mine")
     async def mine(self, ctx):
         """Looks for ores to build and trade with!"""
-        await self.gather_api(ctx, Emoji.pickaxe, "mineable")
+
+        in_boat = await query.user(ctx.author.id, "in_boat")
+        if in_boat:
+            title = "You cant gather in water silly!"
+            text = "Head for land with /move shore"
+            embed = await create_embed(ctx, title, text)
+            await ctx.send(embed=embed)
+        else:
+            await self.gather_api(ctx, Emoji.pickaxe, "mineable")
 
     @commands.command(name="chop")
     async def chop(self, ctx):
         """Find wood and other things to get started!"""
-        await self.gather_api(ctx, Emoji.axe, "chopable")
+
+        in_boat = await query.user(ctx.author.id, "in_boat")
+        if in_boat:
+            title = "You cant gather in water silly!"
+            text = "Head for land with /move shore"
+            embed = await create_embed(ctx, title, text)
+            await ctx.send(embed=embed)
+        else:
+            await self.gather_api(ctx, Emoji.axe, "chopable")
 
     async def gather_api(self, ctx, emoji, mat_type):
         """Collect resources to build and trade with!"""

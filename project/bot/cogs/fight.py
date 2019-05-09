@@ -7,6 +7,7 @@ from bot.classes import (
     items,
     creatures,
     Fist,
+    materials,
     shield_boostrate,
     damage_boostrate,
     animal_boostrate,
@@ -44,6 +45,12 @@ class FightCommands(commands.Cog):
         if len(users) < 2:
             title = "No one is here to fight!"
             text = "Keep looking!"
+            embed = await create_embed(ctx, title, text)
+            await ctx.send(embed=embed)
+
+        elif str(ctx.author.id) in Duel.in_duel:
+            title = "You are already in a duel"
+            text = "Go and see how you are doing!"
             embed = await create_embed(ctx, title, text)
             await ctx.send(embed=embed)
         else:
@@ -95,7 +102,7 @@ class FightCommands(commands.Cog):
 
         item = items.get(name)
         if item is None:
-            return ctx.send("You can not put this item here!")
+            return await ctx.send("You can not put this item here!")
 
         if place not in range(1, 4):
             title = "You can only have 3 slots!"
@@ -178,6 +185,8 @@ class FightCommands(commands.Cog):
 class Duel:
 
     TURN_DURATION = 4
+
+    in_duel = []
 
     def __init__(self, player_doc, coords, response, bot):
         self.coords = coords
@@ -272,11 +281,13 @@ class Duel:
         embed = await create_embed(self.response, title, text)
         # Divide up the losers inv.
         for key, value in loser.inv.items():
-            if value != 0:
+            if materials.get(key) and value != 0:
                 lost = int(value - value / ran.randint(3, 7))
                 await modify.inv(loser.id, key, -lost)
                 await modify.inv(winner.id, key, lost)
 
+        Duel.in_duel.remove(loser.id)
+        Duel.in_duel.remove(winner.id)
         await self.response.edit(embed=embed)
 
     async def weapon_find(self, weapons):
@@ -331,6 +342,8 @@ class Player:
         self.id = self.data.get("id")
         self.inv = self.data.get("inventory")
         self.killed = []
+        Duel.in_duel.append(self.id)
+
         # Add any shield health
         for counter, name in enumerate(self.weapons):
             item = items.get(name)

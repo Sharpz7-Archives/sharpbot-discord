@@ -114,7 +114,7 @@ class AnimalCommands(commands.Cog):
         await ctx.send(embed=embed)
 
     @pet.command(name="scavenge")
-    @commands.cooldown(1, 1, commands.BucketType.user)
+    @commands.cooldown(1, 60*30, commands.BucketType.user)
     async def scavenge(self, ctx):
         """
         Send your pet on a mission to find a player!

@@ -21,10 +21,12 @@ class ErrorHandler(commands.Cog):
 
         # If command has a parent name...
         try:
+            help_name = f"/{ctx.command.full_parent_name}"
             name = f"{ctx.command.full_parent_name} {ctx.command.name}"
 
         # Otherwise just use the command name.
         except AttributeError:
+            help_name = f"/help {ctx.command.name}"
             name = ctx.command.name
 
         # get the original exception
@@ -34,7 +36,7 @@ class ErrorHandler(commands.Cog):
             error_msg = error.args[0].replace('"', "`")
 
             await ctx.send(
-                f"{error_msg}. Try using `/help` to see the existing " f"commands."
+                f"{error_msg}. Try using `/help` to see the existing commands."
             )
             return True
 
@@ -50,15 +52,15 @@ class ErrorHandler(commands.Cog):
             param = str(error.param).title()
 
             await ctx.send(
-                f"`{param}` is missing from `/{name}` - try `/help "
-                f"{name}` for more information."
+                f"`{param}` is missing from `/{name}` - try `{help_name}`"
+                "for more information."
             )
             return True
 
         if isinstance(error, commands.errors.BadArgument):
             await ctx.send(
                 f"That is not how you use `/{name}`. Try using "
-                f"`/help {name}` to see how to use it!"
+                f"`{help_name}` to see how to use it!"
             )
             return True
 
@@ -87,10 +89,11 @@ class ErrorHandler(commands.Cog):
         error_tbs = traceback.format_tb(error.__traceback__) + message
         output = ("\n").join(error_tbs)
         # If Devmode is enabled
-        if os.environ.get("DEVMODE", "FALSE") == "TRUE":
-            await ctx.send(f"```py\n{output}\n```")
-        else:
-            print(output)
+        if os.environ.get("CICD", "FALSE") == "FALSE":
+            if os.environ.get("DEVMODE", "FALSE") == "TRUE":
+                await ctx.send(f"```py\n{output}\n```")
+            else:
+                print(output)
 
 
 def setup(bot):

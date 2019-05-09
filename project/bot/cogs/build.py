@@ -26,8 +26,8 @@ class BuildingCommands(commands.Cog):
                 "/build info - shows stats about your current building.\n"
                 "/build upgrade - upgrade your building to the next level\n"
                 "/build destroy - Destroy your building\n"
-                "/build store <material> <amount> - store materials in your building.\n"
-                "/build withdraw <material> <amount> - take mats out of your building\n\n"
+                "/build store <amount> <material> - store materials in your building.\n"
+                "/build withdraw <amount> <material> - take mats out of your building\n\n"
                 "**PLEASE NOTE** Type `private` at the end of the /b store command to keep items in"
                 "your personal vault!```\n\n"
             )
@@ -79,8 +79,8 @@ class BuildingCommands(commands.Cog):
 
         name = name.capitalize()
 
-        inv, coords, clan = await query.user(
-            ctx.author.id, "inventory", "coords", "clan"
+        inv, coords, clan, in_boat = await query.user(
+            ctx.author.id, "inventory", "coords", "clan", "in_boat"
         )
 
         current_building = await query.building(ctx.author.id)
@@ -97,6 +97,10 @@ class BuildingCommands(commands.Cog):
         if current_building is not None:
             title = "You already have a building!"
             text = "Destory it with /b destroy!"
+
+        elif in_boat:
+            title = "You can not build in water!"
+            text = "Head for shore with /move shore!"
 
         elif not enough_material:
             title = f"You don't have enough {mat}!"
@@ -305,7 +309,7 @@ class BuildingCommands(commands.Cog):
                     text = "To store, do /b store!"
                     await modify.withdraw(ctx.author.id, mat.name, amount)
             else:
-                if owner != ctx.author.id:
+                if owner != str(ctx.author.id):
                     title = "You do not own this building!"
                     text = "Use the public vault!"
 
