@@ -6,18 +6,26 @@ from discord.ext import commands
 from PIL import Image, ImageDraw, ImageFont
 
 from bot.classes import Place
-from bot.constants import (FONT_FILE, LAND_COLOUR, MAP_FILE, SEA_CHECKS, TEMPLATE_FILE, WALKING,
-                           WATER_COLOUR, SHORE_COLOUR, SHORE)
+from bot.constants import (
+    FONT_FILE,
+    LAND_COLOUR,
+    MAP_FILE,
+    SEA_CHECKS,
+    TEMPLATE_FILE,
+    WALKING,
+    WATER_COLOUR,
+    SHORE_COLOUR,
+    SHORE,
+)
 from bot.database import modify, query
 from bot.utils import at_town, create_embed, distance, linear, get_coords, rgb_data
 
 
 class MoveCommands(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(aliases=['where', "m"])
+    @commands.command(aliases=["where", "m"])
     async def map(self, ctx):
         """Open the map view, see where you are.
         Shows you your current coordinates and the whole map"""
@@ -35,7 +43,9 @@ class MoveCommands(commands.Cog):
 
         async with ctx.typing():
             # Run the map creation function in a way that isn't blocking.
-            output = await self.bot.loop.run_in_executor(None, self.create_map, *current_pos)
+            output = await self.bot.loop.run_in_executor(
+                None, self.create_map, *current_pos
+            )
 
         town = await at_town(coords)
 
@@ -47,13 +57,13 @@ class MoveCommands(commands.Cog):
         embed = await create_embed(ctx, title, text)
         await ctx.send(file=file, embed=embed)
 
-    @commands.command(aliases=['teleport', 'tele', 'tp'])
+    @commands.command(aliases=["teleport", "tele", "tp"])
     async def move(self, ctx, arg1, arg2=None):
         """Move across the map.
         There a lots of ways to use this command: e.g
 
         /move 400 400 - Move by coordinate
-        /move saint python - Move by location
+        /move python palace - Move by location
         /move left/up/right/down - Move by direction.
         /move shore - Takes you to the nearst shoreline
 
@@ -96,7 +106,7 @@ class MoveCommands(commands.Cog):
         embed = await create_embed(ctx, title, text)
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['pause'])
+    @commands.command(aliases=["pause"])
     async def stop(self, ctx):
         """Stop yourself from moving."""
 
@@ -122,17 +132,13 @@ class MoveCommands(commands.Cog):
 
             if line is not None:
                 place1, place2, place3, place4 = line
-                draw.line(
-                    [(place1, place2), (place3, place4)],
-                    fill="white",
-                    width=3)
+                draw.line([(place1, place2), (place3, place4)], fill="white", width=3)
 
             # Draw a little orange marker at the user's position.
             # A "you are here" sort of label for this is added below.
             draw.rectangle(
-                [(x - 3), (y - 3), (x + 3), (y + 3)],
-                fill="red",
-                outline="orange")
+                [(x - 3), (y - 3), (x + 3), (y + 3)], fill="red", outline="orange"
+            )
 
             # Position of the label relative to the marker itself.
             label_y = 10
@@ -146,11 +152,7 @@ class MoveCommands(commands.Cog):
 
             # Now we can draw the label text near the marker.
             font = ImageFont.truetype(font=FONT_FILE, size=25)
-            draw.text(
-                (x - label_x, y + label_y),
-                "Position",
-                font=font,
-                fill="orange")
+            draw.text((x - label_x, y + label_y), "Position", font=font, fill="orange")
 
             # Save the image in memory rather than to disk for added speed.
             output = io.BytesIO()
@@ -166,10 +168,10 @@ class MoveCommands(commands.Cog):
 
         x, y = coords
         if x > self.bot.width or y > self.bot.height:
-            return (f"You can't go further than ({self.bot.width}, {self.bot.height})!")
+            return f"You can't go further than ({self.bot.width}, {self.bot.height})!"
 
         elif x < 0 or y < 0:
-            return ("You can't go further than (0, 0)!")
+            return "You can't go further than (0, 0)!"
         return None
 
     async def all_pixel(self, dist, coords, color=WATER_COLOUR):
@@ -222,7 +224,6 @@ class MoveCommands(commands.Cog):
 
 
 class Walk:
-
     def __init__(self, ctx, time, coords, in_boat, bot):
         self.bot = bot
         self.time = time
@@ -288,11 +289,7 @@ def setup(bot):
         for place in Place.lookup.values():
             x1, y1 = place.coords
 
-            draw.text(
-                (x1, y1),
-                place.name,
-                font=font,
-                fill="white")
+            draw.text((x1, y1), place.name, font=font, fill="white")
 
         im.save(MAP_FILE)
 

@@ -11,7 +11,6 @@ from bot.utils import create_embed, utility_search, utility_return
 
 
 class BoatCommands(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
 
@@ -34,7 +33,8 @@ class BoatCommands(commands.Cog):
                 "You can find them at towns, do /help towns!\n\n"
                 "/ship sail - sets your boat down to be boarded\n"
                 "/ship board - lets your get on your boat\n"
-                "/ship unboard - lets you get off your boat```\n\n")
+                "/ship unboard - lets you get off your boat```\n\n"
+            )
 
             text += "Looking for a ship? Try a town with /places"
 
@@ -50,10 +50,13 @@ class BoatCommands(commands.Cog):
         boat_name = boat_name.capitalize()
         preposition = boat_name[0].lower() in "aeiou" and "an" or "a"
         inv, coords, clan, in_boat = await query.user(
-            ctx.author.id, "inventory", "coords", "clan", "in_boat")
+            ctx.author.id, "inventory", "coords", "clan", "in_boat"
+        )
         title = "You do not have any boats!"
         text = "Go and find somewhere you can trade a boat!"
-        inv, coords, clan = await query.user(ctx.author.id, "inventory", "coords", "clan")
+        inv, coords, clan = await query.user(
+            ctx.author.id, "inventory", "coords", "clan"
+        )
         pixel = await query.pixel(coords)
 
         #  If you are not in swampland...
@@ -66,10 +69,10 @@ class BoatCommands(commands.Cog):
 
         if not boat_exists:
             title = f"{boat_name} is not a boat!"
-            text = ("It won't find itself, better find one!")
+            text = "It won't find itself, better find one!"
         elif not has_boat:
             title = f"You do not own {preposition} {boat_name}!"
-            text = ("It needs a new owner, go get one!")
+            text = "It needs a new owner, go get one!"
         elif in_boat:
             title = "You are already in a boat!"
             text = "Now get sailing!"
@@ -77,8 +80,7 @@ class BoatCommands(commands.Cog):
             title = "Your boat has already been placed!"
             text = "Go and find it, I bet it misses you."
         else:
-            await modify.place_boat(ctx.author.id, coords, clan,
-                                    boat_exists)
+            await modify.place_boat(ctx.author.id, coords, clan, boat_exists)
             title = f"Your {boat_name} was placed at {coords}"
             text = "Use it with /board!"
 
@@ -89,8 +91,7 @@ class BoatCommands(commands.Cog):
     async def infomation(self, ctx):
         """See your boat's stats!"""
 
-        coords, level, name = await query.boat(
-            ctx.author.id, "coords", "level", "name")
+        coords, level, name = await query.boat(ctx.author.id, "coords", "level", "name")
 
         boat = boats.get(name)
 
@@ -100,7 +101,7 @@ class BoatCommands(commands.Cog):
         embed = await create_embed(ctx, title, text)
         await ctx.send(embed=embed)
 
-    @commands.command(name="strip")
+    @ship.command(name="strip")
     async def strip(self, ctx):
         """
         Strip your boat into spare parts!
@@ -127,9 +128,8 @@ class BoatCommands(commands.Cog):
 
         try:
             reaction, _ = await self.bot.wait_for(
-                'reaction_add',
-                timeout=CONFIRM_REACTION_TIMEOUT,
-                check=checker)
+                "reaction_add", timeout=CONFIRM_REACTION_TIMEOUT, check=checker
+            )
 
         except asyncio.TimeoutError:
             return
@@ -142,7 +142,7 @@ class BoatCommands(commands.Cog):
                 embed = await create_embed(ctx, title, text)
                 await response.edit(embed=embed)
 
-    @commands.command(name="board")
+    @ship.command(name="board")
     async def board(self, ctx):
         """
         Get on your boat!

@@ -12,7 +12,7 @@ class BuildingCommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.group(name='build', aliases=['b'])
+    @commands.group(name="build", aliases=["b"])
     async def build(self, ctx):
         """All the build commands. Do /help build"""
 
@@ -26,8 +26,11 @@ class BuildingCommands(commands.Cog):
                 "/build info - shows stats about your current building.\n"
                 "/build upgrade - upgrade your building to the next level\n"
                 "/build destroy - Destroy your building\n"
-                "/build store <material> <amount> - store materials in your building.\n"
-                "/build withdraw <material> <amount> - take mats out of your building```\n\n")
+                "/build store <amount> <material> - store materials in your building.\n"
+                "/build withdraw <amount> <material> - take mats out of your building\n\n"
+                "**PLEASE NOTE** Type `private` at the end of the /b store command to keep items in"
+                "your personal vault!```\n\n"
+            )
 
             # Make a list of buildings for the user's convenience.
             buildings = []
@@ -39,7 +42,7 @@ class BuildingCommands(commands.Cog):
             embed = await create_embed(ctx, title, text)
             await ctx.send(embed=embed)
 
-    @build.command(name='list', aliases=['castles'])
+    @build.command(name="list", aliases=["castles"])
     async def show(self, ctx):
         """List all your clan's buildings"""
 
@@ -59,7 +62,7 @@ class BuildingCommands(commands.Cog):
         embed = await create_embed(ctx, title, text)
         await ctx.send(embed=embed)
 
-    @build.command(name='create')
+    @build.command(name="create")
     async def create(self, ctx, name=None):
         """Creates a building at your current coords"""
 
@@ -76,7 +79,9 @@ class BuildingCommands(commands.Cog):
 
         name = name.capitalize()
 
-        inv, coords, clan = await query.user(ctx.author.id, "inventory", "coords", "clan")
+        inv, coords, clan, in_boat = await query.user(
+            ctx.author.id, "inventory", "coords", "clan", "in_boat"
+        )
 
         current_building = await query.building(ctx.author.id)
         building_here = await query.all_buildings("coords", coords)
@@ -92,6 +97,10 @@ class BuildingCommands(commands.Cog):
         if current_building is not None:
             title = "You already have a building!"
             text = "Destory it with /b destroy!"
+
+        elif in_boat:
+            title = "You can not build in water!"
+            text = "Head for shore with /move shore!"
 
         elif not enough_material:
             title = f"You don't have enough {mat}!"
@@ -109,7 +118,7 @@ class BuildingCommands(commands.Cog):
         embed = await create_embed(ctx, title, text)
         await ctx.send(embed=embed)
 
-    @build.command(name='info')
+    @build.command(name="info")
     async def info(self, ctx):
         """Lets you travel to your home building!"""
 
@@ -119,26 +128,30 @@ class BuildingCommands(commands.Cog):
             text = "To get a home, do /help build!"
 
         else:
-            coords, level, name = await query.building(ctx.author.id, "coords", "level", "name")
+            coords, level, name = await query.building(
+                ctx.author.id, "coords", "level", "name"
+            )
 
             b = Building.lookup[name]
             cost = b.hp * b_upgraderate.at(level)
 
             # Get the contents about the building's vaults.
-            private = '\n'.join(await query.building_parse(ctx.author.id, "private"))
-            public = '\n'.join(await query.building_parse(ctx.author.id, "public"))
+            private = "\n".join(await query.building_parse(ctx.author.id, "private"))
+            public = "\n".join(await query.building_parse(ctx.author.id, "public"))
 
             title = f"**Your {b}**"
-            text = (f"**Base coords**: {coords[0]} {coords[1]}\n"
-                    f"**Base Level**: {level}\n"
-                    f"**Cost to upgrade to Lvl {level+1}**: {cost} {b.mat}\n"
-                    f"**Public Vault**: \n{public}\n"
-                    f"**Private Vault**: \n{private}\n")
+            text = (
+                f"**Base coords**: {coords[0]} {coords[1]}\n"
+                f"**Base Level**: {level}\n"
+                f"**Cost to upgrade to Lvl {level+1}**: {cost} {b.mat}\n"
+                f"**Public Vault**: \n{public}\n"
+                f"**Private Vault**: \n{private}\n"
+            )
 
         embed = await create_embed(ctx, title, text)
         await ctx.send(embed=embed)
 
-    @build.command(name='upgrade')
+    @build.command(name="upgrade")
     async def upgrade(self, ctx):
         """
         Upgrade the building to the next level!
@@ -160,13 +173,12 @@ class BuildingCommands(commands.Cog):
         else:
             await modify.upgrade(ctx.author.id, b.name, cost)
             title = f"Upgraded your {b}!"
-            text = (f"**Current Level** - {level + 1}\n"
-                    f"Do /help build for more info!")
+            text = f"**Current Level** - {level + 1}\n" f"Do /help build for more info!"
 
         embed = await create_embed(ctx, title, text)
         await ctx.send(embed=embed)
 
-    @build.command(name='destroy')
+    @build.command(name="destroy")
     async def destroy(self, ctx):
         """
         Destroy your current building so you can get a new one!
@@ -200,9 +212,8 @@ class BuildingCommands(commands.Cog):
 
         try:
             reaction, _ = await self.bot.wait_for(
-                'reaction_add',
-                timeout=CONFIRM_REACTION_TIMEOUT,
-                check=checker)
+                "reaction_add", timeout=CONFIRM_REACTION_TIMEOUT, check=checker
+            )
 
         except asyncio.TimeoutError:
             return
@@ -218,7 +229,7 @@ class BuildingCommands(commands.Cog):
                 embed = await create_embed(ctx, title, text)
                 await response.edit(embed=embed)
 
-    @build.command(name='store')
+    @build.command(name="store")
     async def store(self, ctx, amount: int = 1, mat_name=None, location="public"):
         """
         Store items in your building!
@@ -227,10 +238,12 @@ class BuildingCommands(commands.Cog):
         # Get the building at this point, and the user's inventory.
         amount = abs(amount)
         mat_name = mat_name.capitalize()
-        coords, inv, clan = await query.user(ctx.author.id, "coords", "inventory", "clan")
+        coords, inv, clan = await query.user(
+            ctx.author.id, "coords", "inventory", "clan"
+        )
         building = await query.all_buildings("coords", coords)
         mat = materials.get(mat_name)
-        enough_material = inv.get(mat_name) > 0
+        enough_material = inv.get(mat.name, 0) > 0
 
         if not building:
             title = "There is not a building here!"
@@ -261,7 +274,7 @@ class BuildingCommands(commands.Cog):
         embed = await create_embed(ctx, title, text)
         await ctx.send(embed=embed)
 
-    @build.command(name='withdraw')
+    @build.command(name="withdraw")
     async def take(self, ctx, amount: int = 1, mat_name=None, location="public"):
         """
         Withdraw items in your building!
@@ -287,7 +300,7 @@ class BuildingCommands(commands.Cog):
 
             # Choose which vault to withdraw from
             if location != "private":
-                if mat not in public or public[mat] < amount:
+                if public.get(mat.name, 0) < amount:
                     title = f"Sorry, you do not have this much {mat}!"
                     text = "Get some more with /mine!"
 
@@ -296,11 +309,11 @@ class BuildingCommands(commands.Cog):
                     text = "To store, do /b store!"
                     await modify.withdraw(ctx.author.id, mat.name, amount)
             else:
-                if owner != ctx.author.id:
+                if owner != str(ctx.author.id):
                     title = "You do not own this building!"
                     text = "Use the public vault!"
 
-                elif mat not in private or private[mat] < amount:
+                elif private.get(mat.name, 0) < amount:
                     title = f"Sorry, you do not have this much {mat}!"
                     text = "Get some more with /mine!"
 
@@ -312,7 +325,7 @@ class BuildingCommands(commands.Cog):
         embed = await create_embed(ctx, title, text)
         await ctx.send(embed=embed)
 
-    @build.command(name='defend')
+    @build.command(name="defend", hidden=True)
     async def defend(self, ctx):
         """
         Defend your clans buildings from being attacked
@@ -343,7 +356,7 @@ class BuildingCommands(commands.Cog):
         embed = await create_embed(ctx, title, text)
         await ctx.send(embed=embed)
 
-    @build.command(name='attack')
+    @build.command(name="attack", hidden=True)
     async def attack(self, ctx):
         """
         Start an attack on a building!
@@ -386,8 +399,7 @@ class BuildingCommands(commands.Cog):
         await ctx.send(embed=embed)
 
 
-class Battle():
-
+class Battle:
     def __init__(self, coords, response, bot):
         self.users = []
         self.attackers = []

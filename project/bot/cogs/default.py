@@ -6,11 +6,10 @@ from bot.utils import create_embed
 
 
 class DefaultCommands(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(aliases=['calculate'])
+    @commands.command(aliases=["calculate"])
     async def calc(self, ctx, first: int, operator, second: int):
         """A simple command which does calculations.
         Examples:
@@ -27,7 +26,7 @@ class DefaultCommands(commands.Cog):
                 "*": first * second,
                 "+": first + second,
                 "-": first - second,
-                "/": first // second
+                "/": first // second,
             }
 
             answer = solve[operator]
@@ -38,7 +37,7 @@ class DefaultCommands(commands.Cog):
         embed = await create_embed(ctx, title, text)
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['latency'])
+    @commands.command(aliases=["latency"])
     async def ping(self, ctx):
         """Get the bot's latency"""
 
@@ -49,7 +48,7 @@ class DefaultCommands(commands.Cog):
         embed = await create_embed(ctx, title, text)
         await ctx.send(embed=embed)
 
-    @commands.command(name='announce')
+    @commands.command(name="announce")
     @commands.guild_only()
     async def annoucements(self, ctx):
         """Gives you the annoucement role"""
@@ -72,19 +71,26 @@ class DefaultCommands(commands.Cog):
 
         user = self.bot.get_user(ctx.author.id)
         title = "Credits"
-        text = ("Major thanks to the developers of Sharpbot, if you would like "
-                "to support us here are links to invite Sharpbot to your "
-                "server, Sharpbot's server and to everyone that helped "
-                "contribute! :heart:")
+        text = (
+            "Major thanks to the developers of Sharpbot, if you would like "
+            "to support us here are links to invite Sharpbot to your "
+            "server, Sharpbot's server and to everyone that helped "
+            "contribute! :heart:"
+        )
 
         embed = await create_embed(ctx, title, text)
         embed.add_field(name="Server", value="[Server](https://discord.gg/kE3FXBR)")
-        embed.add_field(name="Invite", value="[Invite](https://discordapp.com/oauth2/authorize?client_id="
-                                             "404251984892526593&permissions=85056&scope=bot)")
-        embed.add_field(name="Contributers / Devs",
-                        value="[Sharp](https://github.com/Sharpz7)\n"
-                              "[Kingsley McDonald](https://github.com/kingdom5500)\n"
-                              "[issuemeaname](https://gitlab.com/issuemeaname)")
+        embed.add_field(
+            name="Invite",
+            value="[Invite](https://discordapp.com/oauth2/authorize?client_id="
+            "404251984892526593&permissions=85056&scope=bot)",
+        )
+        embed.add_field(
+            name="Contributers / Devs",
+            value="[Sharp](https://github.com/Sharpz7)\n"
+            "[Kingsley McDonald](https://github.com/kingdom5500)\n"
+            "[issuemeaname](https://gitlab.com/issuemeaname)",
+        )
 
         await user.send(embed=embed)
 

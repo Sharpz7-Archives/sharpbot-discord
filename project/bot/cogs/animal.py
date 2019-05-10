@@ -9,7 +9,6 @@ from bot.utils import create_embed, utility_return
 
 
 class AnimalCommands(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
 
@@ -31,7 +30,8 @@ class AnimalCommands(commands.Cog):
                 "```"
                 "/pet create - choose one of your pets\n"
                 "/pet feed - Feed your pet giving it a chance to level up!\n"
-                "/pet scavenge - Find a player in the world!```\n")
+                "/pet scavenge - Find a player in the world!```\n"
+            )
 
             embed = await create_embed(ctx, title, text)
             await ctx.send(embed=embed)
@@ -52,7 +52,7 @@ class AnimalCommands(commands.Cog):
 
         else:
             if pet:
-                await modify.inv(ctx.author.id, pet['name'], pet['lvl'])
+                await modify.inv(ctx.author.id, pet["name"], pet["lvl"])
             title = f"You now have a pet {name}!"
             text = "You can feed it here!"
             await modify.pet(ctx.author.id, name, inv[name])
@@ -114,7 +114,7 @@ class AnimalCommands(commands.Cog):
         await ctx.send(embed=embed)
 
     @pet.command(name="scavenge")
-    @commands.cooldown(1, 1, commands.BucketType.user)
+    @commands.cooldown(1, 60*30, commands.BucketType.user)
     async def scavenge(self, ctx):
         """
         Send your pet on a mission to find a player!

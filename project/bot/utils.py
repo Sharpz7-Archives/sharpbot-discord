@@ -11,9 +11,20 @@ from rethinkdb import RethinkDB
 from rethinkdb.errors import ReqlOpFailedError
 
 from bot.classes import Place, Vector, craft_upgraderate
-from bot.constants import (BOAT_TABLE, BUILD_TABLE, DATABASE_NAME, HOST,
-                           LAND_COLOUR, SEA_FILE, SHORE, SHORE_FILE,
-                           SWAMP_COLOUR, TOWNSIZE, USER_TABLE, WATER_COLOUR)
+from bot.constants import (
+    BOAT_TABLE,
+    BUILD_TABLE,
+    DATABASE_NAME,
+    HOST,
+    LAND_COLOUR,
+    SEA_FILE,
+    SHORE,
+    SHORE_FILE,
+    SWAMP_COLOUR,
+    TOWNSIZE,
+    USER_TABLE,
+    WATER_COLOUR,
+)
 
 r = RethinkDB()
 
@@ -33,10 +44,7 @@ async def create_embed(ctx, title, text):
     suggestion = await suggestions(ctx)
 
     text += f"\n\n{suggestion}\n"
-    embed = discord.Embed(
-        title=title,
-        description=text,
-        colour=color)
+    embed = discord.Embed(title=title, description=text, colour=color)
     embed.set_footer(text="Created by the Sharpbot Dev Team (/about)")
 
     return embed
@@ -58,7 +66,7 @@ async def suggestions(ctx):
         "pet": "Try feeding your pet with `/feed`!",
         "sail": "Try getting in your boat with `/board`",
         "build": "Try storing your items in your building. Do `/build store`!",
-        "inv": "Take a look at crafting with `/craft`!"
+        "inv": "Take a look at crafting with `/craft`!",
     }
 
     random_suggestions = [
@@ -69,7 +77,7 @@ async def suggestions(ctx):
         "Create your dueling gear with `/help fight`!",
         "Get bot annoucements by doing `/announce`!",
         "Do you hate maths? Try `/help calc`!",
-        "Wanna hunt for some nice gear? Try `/find`!"
+        "Wanna hunt for some nice gear? Try `/find`!",
     ]
 
     try:
@@ -125,10 +133,14 @@ async def move_direction(direction, amount, x, y):
     # Calculate all the offsets, then choose the right one.
     solve = {
         "left": (x - amount, y),
+        "west": (x - amount, y),
         "right": (x + amount, y),
+        "east": (x + amount, y),
         "down": (x, y + amount),
+        "south": (x, y + amount),
         "up": (x, y - amount),
-        "shore": (await nearest_shore_point(x, y))
+        "north": (x, y - amount),
+        "shore": (await nearest_shore_point(x, y)),
     }
     try:
         return solve[direction]
@@ -160,8 +172,8 @@ async def at_town(coords):
     """Checks if the coordinate specified is on a town."""
 
     # Creates a border using `TOWNSIZE` constant
-    testx = range(coords[0]-TOWNSIZE, coords[0]+TOWNSIZE)
-    testy = range(coords[1]-TOWNSIZE, coords[1]+TOWNSIZE)
+    testx = range(coords[0] - TOWNSIZE, coords[0] + TOWNSIZE)
+    testy = range(coords[1] - TOWNSIZE, coords[1] + TOWNSIZE)
 
     for town in Place.lookup.values():
         if town.coords[0] in testx:
@@ -178,7 +190,7 @@ async def find_trade(town, amount):
     """
 
     town = Place.lookup[town]
-    return town.trades[amount-1]
+    return town.trades[amount - 1]
 
 
 async def pixel(coords):
@@ -220,7 +232,7 @@ async def distance(coords):
     a nice little formula
     """
     x1, y1, x2, y2 = coords
-    answer = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+    answer = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
     return int(answer)
 
 
@@ -245,7 +257,7 @@ async def upgrade_text(recipe, inv, times=None):
         lvl = inv.get(upgrade_item[0].name, 1)
         cost = craft_upgraderate.at(lvl)
         selling_list.append(f"{price * cost} {item}")
-    desc = recipe.crafttext.replace("xxx", ' and '.join(selling_list))
+    desc = recipe.crafttext.replace("xxx", " and ".join(selling_list))
     if times:
         desc += f" {times} times!"
     return desc
@@ -284,22 +296,22 @@ class RGB:
 
     def __init__(self):
         with Image.open(SEA_FILE) as im:
-            rgb_im = im.convert('RGB')
+            rgb_im = im.convert("RGB")
             self.seawidth, _ = im.size
             self.sea_data = list(rgb_im.getdata())
 
         with Image.open(SHORE_FILE) as im:
-            rgb_im = im.convert('RGB')
+            rgb_im = im.convert("RGB")
             self.shorewidth, _ = im.size
             self.shore_data = list(rgb_im.getdata())
 
     def shore(self, coords):
         x, y = coords
-        return tuple(self.shore_data[self.shorewidth*y+x])
+        return tuple(self.shore_data[self.shorewidth * y + x])
 
     def sea(self, coords):
         x, y = coords
-        return tuple(self.sea_data[self.seawidth*y+x])
+        return tuple(self.sea_data[self.seawidth * y + x])
 
 
 rgb_data = RGB()

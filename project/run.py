@@ -25,9 +25,7 @@ def get_prefix(bot, message):
     return commands.when_mentioned_or(*PREFIXES)(bot, message)
 
 
-bot = commands.Bot(
-    command_prefix=get_prefix,
-    description='SharpBot')
+bot = commands.Bot(command_prefix=get_prefix, description="SharpBot")
 
 with open(COGS_FILE, "r") as ymlfile:
     cogs_data = yaml.safe_load(ymlfile)
@@ -35,24 +33,25 @@ with open(COGS_FILE, "r") as ymlfile:
 initial_extensions = cogs_data.get("cogs")
 
 # Load all extenstions in the cogs JSON file.
-if __name__ == '__main__':
+if __name__ == "__main__":
     for extension in initial_extensions:
         try:
             bot.load_extension(extension)
             print(f"Loaded {extension}...")
         except Exception:
-            print(f'Failed to load extension {extension}.', file=sys.stderr)
+            print(f"Failed to load extension {extension}.", file=sys.stderr)
 
             traceback.print_exc()
 
 
 @bot.event
 async def on_ready():
-    print(f"\n\n"
-          f"Logged in as: {bot.user.name} - {bot.user.id}\n"
-          f"Discord Version: 1.0.0a\n"
-          f"Sharpbot Version: 1.0.1a\n"
-          )
+    print(
+        f"\n\n"
+        f"Logged in as: {bot.user.name} - {bot.user.id}\n"
+        f"Discord Version: 1.0.0a\n"
+        f"Sharpbot Version: 1.0.1a\n"
+    )
 
     bot.appinfo = await bot.application_info()
 
@@ -83,14 +82,9 @@ async def on_ready():
     with open(YML_FILE, "w") as yml_file:
         yaml.dump(channel_data, yml_file, default_flow_style=False)
 
-    text = (
-        f"```"
-        f"Successfully Started\n"
-        f"Time: {datetime.now()}"
-        f"```"
-    )
+    text = f"```" f"Successfully Started\n" f"Time: {datetime.now()}" f"```"
     await channel.send(text)
-    print('Successfully logged in...')
+    print("Successfully logged in...")
 
 
 @bot.event
@@ -106,8 +100,6 @@ async def on_member_join(member):
         except ReqlNonExistenceError:
             pass
 
+
 print("Logging in...")
-bot.run(
-    os.environ['SECRET'],
-    bot=True,
-    reconnect=True)
+bot.run(os.environ["SECRET"], bot=True, reconnect=True)

@@ -14,9 +14,7 @@ async def inv(author, name, total):
     """
 
     author = str(author)
-    data = {
-            "inventory": {name: (r.row["inventory"][name]+total).default(total)}
-        }
+    data = {"inventory": {name: (r.row["inventory"][name] + total).default(total)}}
     await r.table(USER_TABLE).get(author).update(data).run(bot_conn)
 
 
@@ -80,7 +78,7 @@ async def building(author, building, clan, coords):
         "name": building.name,
         "level": 1,
         "public": {},
-        "private": {}
+        "private": {},
     }
     await inv(author, building.mat.name, -building.hp)
     await r.table(BUILD_TABLE).insert(data).run(bot_conn)
@@ -91,7 +89,7 @@ async def upgrade(author, name, cost):
 
     author = str(author)
     building = Building.lookup[name]
-    data = {"level": r.row["level"]+1}
+    data = {"level": r.row["level"] + 1}
     await inv(author, building.mat.name, -(cost))
     await r.table(BUILD_TABLE).get(author).update(data).run(bot_conn)
 
@@ -117,7 +115,7 @@ async def store(author, mat, amount, location="public"):
     """
 
     author = str(author)
-    data = {location: {mat: (r.row[location][mat]+amount).default(amount)}}
+    data = {location: {mat: (r.row[location][mat] + amount).default(amount)}}
     await inv(author, mat, -amount)
     await r.table(BUILD_TABLE).get(author).update(data).run(bot_conn)
 
@@ -130,7 +128,7 @@ async def withdraw(author, mat, amount, location="public"):
     """
 
     author = str(author)
-    data = {location: {mat: (r.row[location][mat]-amount).default(amount)}}
+    data = {location: {mat: (r.row[location][mat] - amount).default(amount)}}
     await inv(author, mat, amount)
     await r.table(BUILD_TABLE).get(author).update(data).run(bot_conn)
 
@@ -153,13 +151,13 @@ async def fight(author, slots, name, place):
 
     # If an item is being added
     if place > 0:
-        slots[place-1] = name
+        slots[place - 1] = name
         data = {"fight": slots}
         await r.table(USER_TABLE).get(author).update(data).run(bot_conn)
 
     # If not, remove it
     else:
-        slots[abs(place)-1] = "Empty"
+        slots[abs(place) - 1] = "Empty"
         data = {"fight": slots}
         await r.table(USER_TABLE).get(author).update(data).run(bot_conn)
 
@@ -168,9 +166,7 @@ async def pet(author, name, level):
     """Create's a pet."""
 
     author = str(author)
-    data = {"pet": {
-        "name": name,
-        "lvl": level}}
+    data = {"pet": {"name": name, "lvl": level}}
     await r.table(USER_TABLE).get(author).update(data).run(bot_conn)
 
 
@@ -178,8 +174,7 @@ async def pet_lvl(author):
     """Level's up your pet"""
 
     author = str(author)
-    data = {"pet": {
-        "lvl": (r.row["pet"]["lvl"]+1)}}
+    data = {"pet": {"lvl": (r.row["pet"]["lvl"] + 1)}}
     await r.table(USER_TABLE).get(author).update(data).run(bot_conn)
 
 
@@ -191,13 +186,7 @@ async def place_boat(author, coords, clan, boat):
     """
 
     author = str(author)
-    data = {
-        "id": author,
-        "clan": clan,
-        "coords": coords,
-        "name": boat.name,
-        "level": 1
-    }
+    data = {"id": author, "clan": clan, "coords": coords, "name": boat.name, "level": 1}
     await inv(author, boat.name, -1)
     await r.table(BOAT_TABLE).insert(data).run(bot_conn)
 
@@ -220,6 +209,7 @@ async def move_boat(author, coords):
     author = str(author)
     data = {"coords": coords}
     await r.table(BOAT_TABLE).get(author).update(data).run(bot_conn)
+
 
 # For Admins
 

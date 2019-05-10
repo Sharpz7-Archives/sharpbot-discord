@@ -51,7 +51,7 @@ async def pet_ranuser(pet, author):
     lvl = pet.get("lvl")
     choice = pet_scavengerate.at(lvl)
     async for doc in cursor:
-        user_not_pet_owner = (str(doc.get("id")) != author)
+        user_not_pet_owner = str(doc.get("id")) != author
         if random.randint(1, choice) == 1 and user_not_pet_owner:
             return doc
 
@@ -64,7 +64,7 @@ async def coords(author):
     author = str(author)
     users = []
     coords = await user(author, "coords")
-    cursor = await r.table(USER_TABLE).filter({'coords': coords}).run(bot_conn)
+    cursor = await r.table(USER_TABLE).filter({"coords": coords}).run(bot_conn)
 
     # Loop through all users
     async for doc in cursor:
@@ -81,8 +81,7 @@ async def all_buildings(name, value, forcelist=False):
     """
 
     data = []
-    cursor = await r.table(
-        BUILD_TABLE).filter({name: value}).run(bot_conn)
+    cursor = await r.table(BUILD_TABLE).filter({name: value}).run(bot_conn)
 
     # Loop through all users
     async for doc in cursor:
@@ -128,13 +127,9 @@ async def start(author, width, height):
             break
 
     # Chooses a random clan
-    clan = random.choice([
-        "Clan Tiene",
-        "Clan Uisge",
-        "Clan Ogsaidean",
-        "Clan Talamh"])
+    clan = random.choice(["Clan Tiene", "Clan Uisge", "Clan Ogsaidean", "Clan Talamh"])
 
-    fight = ["Empty"]*3
+    fight = ["Empty"] * 3
 
     data = [
         {
@@ -145,9 +140,9 @@ async def start(author, width, height):
             "pet": {},
             "inventory": {},
             "asleep": True,
-            "in_boat": False
+            "in_boat": False,
         }
-            ]
+    ]
 
     await r.table(USER_TABLE).insert(data).run(bot_conn)
     return rand_coords, clan

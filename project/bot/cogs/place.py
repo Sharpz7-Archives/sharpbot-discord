@@ -7,11 +7,10 @@ from bot.constants import NUM_TO_ALPHA
 
 
 class PlaceCommands(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.group(name='town', aliases=['towns', "t", "places"])
+    @commands.group(name="town", aliases=["towns", "t", "places"])
     async def places(self, ctx):
         """
         All the commands for towns and places!
@@ -21,7 +20,7 @@ class PlaceCommands(commands.Cog):
         """
 
         if ctx.invoked_subcommand is None:
-            title = 'PLACE HELP'
+            title = "PLACE HELP"
             text = (
                 "```"
                 "All the commands for towns and places!\n"
@@ -32,7 +31,7 @@ class PlaceCommands(commands.Cog):
             embed = await create_embed(ctx, title, text)
             await ctx.send(embed=embed)
 
-    @places.command(name='list', aliases=['find'])
+    @places.command(name="list", aliases=["find"])
     async def find(self, ctx):
         """Shows you all the places you can travel to.
         Copy and paste one of these locations and do:
@@ -45,7 +44,7 @@ class PlaceCommands(commands.Cog):
         for place in Place.lookup.values():
             places.append(f"{place.name} - {place.type} - {place.coords}")
 
-        title = 'Current Places:'
+        title = "Current Places:"
         text = "\n".join(places)
         embed = await create_embed(ctx, title, text)
         await ctx.send(embed=embed)
@@ -67,8 +66,7 @@ class PlaceCommands(commands.Cog):
                     trades.append(f"**Trade {letter}** - {item}")
 
                 text = ",\n".join(trades)
-                text = (f"**You can trade with the {town.trade_name}**:\n\n"
-                        f"{text}")
+                text = f"**You can trade with the {town.trade_name}**:\n\n" f"{text}"
 
         embed = await create_embed(ctx, title, text)
         await ctx.send(embed=embed)

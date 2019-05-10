@@ -1,6 +1,7 @@
 import asyncio
 import os
 from importlib import import_module
+import shutil
 
 from bot.constants import ARTIFACT_FOLDER
 from bot_testing.objects import File
@@ -18,6 +19,12 @@ for item in names:
 
 
 def run_tests():
+    # Remove old artifacts folder
+    try:
+        shutil.rmtree(ARTIFACT_FOLDER)
+    except FileNotFoundError:
+        pass
+
     # Create artifacts folder
     try:
         os.mkdir(ARTIFACT_FOLDER)

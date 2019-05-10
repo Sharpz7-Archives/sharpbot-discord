@@ -19,27 +19,23 @@ GCONSTANTS_FILE = (p / "bot" / "files" / "constants.yml").as_posix()
 DEFAULT_GCONSTANTS_FILE = (p / "bot" / "files" / "constants.default.yml").as_posix()
 ARTIFACT_FOLDER = (p / "bot_testing" / "artifacts").as_posix()
 
-CLANS = [
-    "Clan Tiene",
-    "Clan Uisge",
-    "Clan Ogsaidean",
-    "Clan Talamh"]
+CLANS = ["Clan Tiene", "Clan Uisge", "Clan Ogsaidean", "Clan Talamh"]
 
 USER_TABLE = "users"
 BUILD_TABLE = "buildings"
 BOAT_TABLE = "boats"
 
-DATABASE_NAME = 'sharpbot'
+DATABASE_NAME = "sharpbot"
 
 PREFIXES = ["/", "!/"]
 
 SEA_CHECKS = 20
 
-HOST = 149286699187437568  # TODO remove this!
+HOST = 265868669853106176  # TODO remove this!
 
 OFFICIAL_SERVERS = (
     468432687997124618,  # testing server
-    572866688802881560   # offical server
+    572866688802881560,  # offical server
 )
 
 WATER_COLOUR = (0, 148, 255)  # blue
@@ -58,7 +54,7 @@ SHORE = []  # stores shore points
 
 NUM_TO_ALPHA = alphabet
 
-ALPHA_TO_NUM = {letter: n+1 for n, letter in enumerate(alphabet)}
+ALPHA_TO_NUM = {letter: n + 1 for n, letter in enumerate(alphabet)}
 
 try:
     with open(GCONSTANTS_FILE, "r") as f:
@@ -73,10 +69,16 @@ if os.environ.get("CICD", "FALSE") == "TRUE":
         data = yaml.safe_load(f)
 
 # All constants required by the game
-EXHAUST_MINE_CHANCE = data.get("EXHAUST_MINE_CHANCE")  # the chance of exhausting a coord's materials
+EXHAUST_MINE_CHANCE = data.get(
+    "EXHAUST_MINE_CHANCE"
+)  # the chance of exhausting a coord's materials
 TOWNSIZE = data.get("TOWNSIZE")
-MAX_FEED_AMOUNT = data.get("MAX_FEED_AMOUNT")  # The maximum number of items you can feed a pet
-MAX_MINE_AMOUNT = data.get("MAX_MINE_AMOUNT")  # the maximum possible yield of materials per attempt
+MAX_FEED_AMOUNT = data.get(
+    "MAX_FEED_AMOUNT"
+)  # The maximum number of items you can feed a pet
+MAX_MINE_AMOUNT = data.get(
+    "MAX_MINE_AMOUNT"
+)  # the maximum possible yield of materials per attempt
 
 
 class Emoji:

@@ -7,10 +7,27 @@ import yaml
 from PIL import Image, ImageDraw, ImageFont
 
 from bot.classes import Place
-from bot.cogs import (animal, boat, build, default, fight, gather, move, owner,
-                      place, player, error_handler)
-from bot.constants import (FONT_FILE, MAP_FILE, SHORE, SHORE_COLOUR,
-                           TEMPLATE_FILE, ARTIFACT_FOLDER)
+from bot.cogs import (
+    animal,
+    boat,
+    build,
+    default,
+    fight,
+    gather,
+    move,
+    owner,
+    place,
+    player,
+    error_handler,
+)
+from bot.constants import (
+    FONT_FILE,
+    MAP_FILE,
+    SHORE,
+    SHORE_COLOUR,
+    TEMPLATE_FILE,
+    ARTIFACT_FOLDER,
+)
 from bot.errors import TestFailError
 from bot.utils import rgb_data
 
@@ -41,9 +58,7 @@ class Guild:
 
     def __init__(self):
         self.id = 101
-        self.roles = [
-            Roles("Announcement"),
-        ]
+        self.roles = [Roles("Announcement")]
 
 
 class Bot:
@@ -58,15 +73,11 @@ class Bot:
             for town in Place.lookup.values():
                 x1, y1 = town.coords
 
-                draw.text(
-                    (x1, y1),
-                    town.name,
-                    font=font,
-                    fill="white")
+                draw.text((x1, y1), town.name, font=font, fill="white")
 
             im.save(MAP_FILE)
 
-        #  Sets world border
+            #  Sets world border
             self.width, self.height = im.size
             # Ensures pixel is in image at all times
             self.width -= 1
@@ -169,7 +180,7 @@ def cog_find(name):
         "move": move.MoveCommands,
         "owner": owner.OwnerCommands,
         "place": place.PlaceCommands,
-        "player": player.PlayerCommands
+        "player": player.PlayerCommands,
     }
     return data.get(name)
 
@@ -182,6 +193,7 @@ class Test:
         self.commands = commands
         self.nopost = nopost
         self.artifacts = []
+        self.error = None
 
     async def runner(self):
         """Runs all the tasks specified in the test_file"""
@@ -219,26 +231,31 @@ class Test:
                 if fails:
                     fails.run_all(self.ctx.last_log)
             print("DONE!\n")
-            failed = False
 
-        except KeyboardInterrupt:
+        except KeyboardInterrupt as e:
             print("Aborted. Skipping to post...")
             traceback.print_exc()
-            failed = True
+            self.error = e
 
         except Exception as e:
             handled = await error_handler.ErrorHandler.on_command_error(
-                instance(bot), self.ctx, e)
+                instance(bot), self.ctx, e
+            )
             if not handled:
-                print(f"\nThere was a unexpected error @ {self.ctx.stage}! ({type(e).__name__})\n")
-                traceback.print_exc()
+                print("\n====================")
+                print(
+                    f"ERROR @ {self.ctx.stage} of {self.name}! (Command: {self.ctx.command.name})\n"
+                )
+                print(f"Error: {e}")
+                print("====================\n\n")
                 print("Skipping to post.\n")
-                failed = True
-            else:
-                failed = False
+                self.error = e
 
-        if failed:
-            await self.ctx.log(f"STAGE {self.ctx.stage} FAILED\n ({traceback.print_exc()})")
+        if self.error:
+            self.ctx.stage = "Error"
+            await self.ctx.log(
+                f"{traceback.format_tb(self.error.__traceback__)}"
+            )
 
         # Removes and logs the players data
         # This will be stored in its artifact
@@ -254,7 +271,7 @@ class Test:
         with open(f"{ARTIFACT_FOLDER}/{self.name}.yml", "w+") as ymlFile:
             yaml.dump(self.ctx.artifacts, ymlFile, default_flow_style=False)
 
-        if failed:
+        if self.error:
             print("A test failed. Exiting...")
             exit(1)
 
@@ -264,6 +281,7 @@ class Test:
 
         Also detects 1 level of subcommands and changes the command accordingly
         """
+
         if name.startswith("/"):
             name = name[1:]
         func = getattr(instance, name, None)
@@ -286,18 +304,27 @@ class Test:
             self.ctx.invoked_subcommand = True
             if options[0] in group_command:
                 func, *options = options
-                return group_command[func], options
+                func = group_command[func]
+                options = await self.convert_options(options, func)
+                return func, options
 
-        # Makes sure all args are converted using simple discord conversions.
-        # Only basic python classes are supported
+        options = await self.convert_options(options, func)
+        return func, options
+
+    async def convert_options(self, options, func):
+        """
+        Makes sure all args are converted using simple discord conversions.
+        Only basic python classes are supported
+        """
+
         for counter, option in enumerate(options):
             params = list(func.clean_params.values())
             if len(params) > 2:
-                instance = params[counter+1].annotation
+                instance = params[counter + 1].annotation
                 if instance != inspect._empty:
                     options[counter] = instance(option)
 
-        return func, options
+        return options
 
 
 class File:
@@ -306,6 +333,7 @@ class File:
 
     Allows for multiple tests in the same file.
     """
+
     def __init__(self):
         self.all_tests = []
 
@@ -355,7 +383,7 @@ class KeyInMessage(Fail):
     def run(self, message):
         for key in self.keys:
             if key not in message:
-                raise TestFailError("Not all keys were found in message!")
+                raise TestFailError(f"Not all keys were found in message! ({key})")
 
 
 class KeyNotInMessage(Fail):
@@ -365,4 +393,4 @@ class KeyNotInMessage(Fail):
     def run(self, message):
         for key in self.keys:
             if key in message:
-                raise TestFailError("A banned key was found in message!")
+                raise TestFailError(f"A banned key was found in message! ({key})")

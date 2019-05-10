@@ -3,13 +3,20 @@ import random as ran
 
 from discord.ext import commands
 
-from bot.classes import items, creatures, Fist, shield_boostrate, damage_boostrate, animal_boostrate
+from bot.classes import (
+    items,
+    creatures,
+    Fist,
+    materials,
+    shield_boostrate,
+    damage_boostrate,
+    animal_boostrate,
+)
 from bot.database import query, modify
 from bot.utils import create_embed
 
 
 class FightCommands(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
 
@@ -40,6 +47,12 @@ class FightCommands(commands.Cog):
             text = "Keep looking!"
             embed = await create_embed(ctx, title, text)
             await ctx.send(embed=embed)
+
+        elif str(ctx.author.id) in Duel.in_duel:
+            title = "You are already in a duel"
+            text = "Go and see how you are doing!"
+            embed = await create_embed(ctx, title, text)
+            await ctx.send(embed=embed)
         else:
             # Select the two users who will participate
             users = users[:2]
@@ -56,9 +69,9 @@ class FightCommands(commands.Cog):
             text = "Let the fun begin!"
 
             title1 = "**Player1's items:**"
-            text1 = await self.fight_parse(p1['fight'])
+            text1 = await self.fight_parse(p1["fight"])
             title2 = "**Player2's items:**"
-            text2 = await self.fight_parse(p2['fight'])
+            text2 = await self.fight_parse(p2["fight"])
 
             embed = await create_embed(ctx, title, text)
             embed.add_field(name=title1, value=text1, inline=False)
@@ -69,27 +82,27 @@ class FightCommands(commands.Cog):
             fight = Duel([p1, p2], coords, response, self.bot)
             self.bot.loop.create_task(fight.start_loop())
 
-    @fight.command(aliases=['i'])
+    @fight.command(aliases=["i"])
     async def info(self, ctx):
         """See your fighting info"""
 
-        slots = await query.user(ctx.author.id, 'fight')
+        slots = await query.user(ctx.author.id, "fight")
         text = await self.fight_parse(slots)
         title = "Your items for battle:"
         embed = await create_embed(ctx, title, text)
         await ctx.send(embed=embed)
 
-    @fight.command(name='assign')
+    @fight.command(name="assign")
     async def assign(self, ctx, name, place: int = 1):
         """Assign an item to a slot in your fighting inventory"""
 
         text = "Use your items in battle with `/help duel!`"
-        slots, inventory = await query.user(ctx.author.id, 'fight', 'inventory')
+        slots, inventory = await query.user(ctx.author.id, "fight", "inventory")
         name = name.capitalize()
 
         item = items.get(name)
         if item is None:
-            return ctx.send("You can not put this item here!")
+            return await ctx.send("You can not put this item here!")
 
         if place not in range(1, 4):
             title = "You can only have 3 slots!"
@@ -117,8 +130,8 @@ class FightCommands(commands.Cog):
         """
 
         text = "Use your items in battle with `/help duel!`"
-        slots = await query.user(ctx.author.id, 'fight')
-        name = slots[place-1]
+        slots = await query.user(ctx.author.id, "fight")
+        name = slots[place - 1]
 
         if name == "Empty":
             title = f"You have nothing in this slot!"
@@ -130,7 +143,7 @@ class FightCommands(commands.Cog):
         embed = await create_embed(ctx, title, text)
         await ctx.send(embed=embed)
 
-    @commands.command(name='sleep')
+    @commands.command(name="sleep")
     async def sleep(self, ctx):
         """
         Sends you to sleep!
@@ -173,13 +186,19 @@ class Duel:
 
     TURN_DURATION = 4
 
+    in_duel = []
+
     def __init__(self, player_doc, coords, response, bot):
         self.coords = coords
         self.looping = True
         self.response = response
         self.bot = bot
-        self.player1 = Player(player_doc[0], self.bot.get_user(int(player_doc[0]["id"])).name)
-        self.player2 = Player(player_doc[1], self.bot.get_user(int(player_doc[1]["id"])).name)
+        self.player1 = Player(
+            player_doc[0], self.bot.get_user(int(player_doc[0]["id"])).name
+        )
+        self.player2 = Player(
+            player_doc[1], self.bot.get_user(int(player_doc[1]["id"])).name
+        )
 
     async def start_loop(self):
         """Begin the fight! Turns are played until someone dies."""
@@ -188,7 +207,7 @@ class Duel:
             # Choose a random player to make a move
             attack = ran.choice([self.player1, self.player2])
             # Make sure other player is the defender.
-            defend = (self.player1 if attack != self.player1 else self.player2)
+            defend = self.player1 if attack != self.player1 else self.player2
 
             # Get all move values.
             damage, animal_dmg, weapon, animal = await self.do_move(attack, defend)
@@ -199,7 +218,9 @@ class Duel:
 
             # Nice little display!
             if animal_dmg != 0:
-                animal = (f"{defend.name} took an extra {animal_dmg} damage from a {animal}\n")
+                animal = (
+                    f"{defend.name} took an extra {animal_dmg} damage from a {animal}\n"
+                )
             else:
                 animal = ""
 
@@ -210,15 +231,16 @@ class Duel:
                 damage = ""
 
             title = f"You are now in a duel!!"
-            text = (f"Let the fun begin!\n\n"
-                    f"**{self.player1.name}:**\n"
-                    f"**Health**: {self.player1.health}\n\n"
-                    f"**{self.player2.name}:**\n"
-                    f"**Health**: {self.player2.health}\n\n"
-
-                    f"**LIVE FEED**\n"
-                    f"{damage}"
-                    f"{animal}")
+            text = (
+                f"Let the fun begin!\n\n"
+                f"**{self.player1.name}:**\n"
+                f"**Health**: {self.player1.health}\n\n"
+                f"**{self.player2.name}:**\n"
+                f"**Health**: {self.player2.health}\n\n"
+                f"**LIVE FEED**\n"
+                f"{damage}"
+                f"{animal}"
+            )
 
             embed = await create_embed(self.response, title, text)
             await self.response.edit(embed=embed)
@@ -231,7 +253,7 @@ class Duel:
         """Let one player make their strike."""
 
         # If all elements are empty.
-        if (await self.check_equal(attack.weapons)):
+        if await self.check_equal(attack.weapons):
             # Make sure default "fist" item is used.
             weapon = Fist()
         else:
@@ -247,7 +269,7 @@ class Duel:
         animal, animal_dmg = await self.animal(attack)
 
         # Remove all damage
-        defend.health -= (damage + animal_dmg)
+        defend.health -= damage + animal_dmg
         return damage, animal_dmg, weapon, animal
 
     async def death(self, loser, winner):
@@ -255,15 +277,17 @@ class Duel:
 
         self.looping = False
         title = f"{loser.name} died!"
-        text = (f"{loser.name} was sent to sleep, and {winner.name} collected their winnings!")
+        text = f"{loser.name} was sent to sleep, and {winner.name} collected their winnings!"
         embed = await create_embed(self.response, title, text)
         # Divide up the losers inv.
         for key, value in loser.inv.items():
-            if value != 0:
+            if materials.get(key) and value != 0:
                 lost = int(value - value / ran.randint(3, 7))
                 await modify.inv(loser.id, key, -lost)
                 await modify.inv(winner.id, key, lost)
 
+        Duel.in_duel.remove(loser.id)
+        Duel.in_duel.remove(winner.id)
         await self.response.edit(embed=embed)
 
     async def weapon_find(self, weapons):
@@ -314,10 +338,12 @@ class Player:
         self.name = name
         self.health = self.DEFAULT_HEALTH
         self.weapons = self.data.get("fight")
-        self.pet = self.data.get('pet')
+        self.pet = self.data.get("pet")
         self.id = self.data.get("id")
-        self.inv = self.data.get('inventory')
+        self.inv = self.data.get("inventory")
         self.killed = []
+        Duel.in_duel.append(self.id)
+
         # Add any shield health
         for counter, name in enumerate(self.weapons):
             item = items.get(name)
