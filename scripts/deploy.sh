@@ -14,38 +14,11 @@ else
     SUDO="sudo"
 fi
 
-FILE=.env
-if [[ ! -f $FILE ]]; then
-    read -p "Please enter your bots key: " -r
-    touch $FILE
-    echo "SECRET=$REPLY" >> .env
-    read -p "Do you want to use Docker? (y/n) " -r
-    if [[ $REPLY =~ ^[Nn]$ ]]; then
-        echo "NO_DOCKER=TRUE" >> .env
-    fi
-else
-    echo ".env exists..."
-fi
-
 # Checks if using docker
 source .env
 if [[ $NO_DOCKER == "TRUE" ]]; then
     # Non Docker Install
     if [[ -n "$RethinkDB" ]]; then
-        echo "Database directory set..."
-    else
-        NAMEOUT="$(uname)"
-        if [[ $NAMEOUT =~ "MINGW" ]]; then
-            read -p "Please enter the path for RethinkDB: " -r
-            RDB_PATH="$(echo "${REPLY}" | sed 's/\\/\\\\/g')"
-            echo "RethinkDB="$RDB_PATH'\\rethinkdb.exe'"" >> .env
-        else
-            SUDO="sudo"
-        fi
-            read -p "Please enter the path for RethinkDB: " -r
-            echo "RethinkDB={$REPLY}/rethinkdb.exe" >> .env
-    fi
-
     source .env
     start $RethinkDB
     cd project
@@ -79,18 +52,6 @@ else
     fi
 
     source .env
-    if [[ ! -n "$USE_DOCKERHUB" ]]; then
-        read -p "Do you want to pull the latest image? (SIGNIFICANTLY FASTER) (y/n) " -r
-        if [[ $REPLY =~ ^[Yy]$ ]];then
-            read -p "Please enter your Dockerhub username: " -r
-            echo "DOCKERU=$REPLY" >> .env
-            read -p "Please enter your Dockerhub password: " -r
-            echo "DOCKERP=$REPLY" >> .env
-            echo "USE_DOCKERHUB=TRUE" >> .env
-        else
-            echo "USE_DOCKERHUB=FALSE" >> .env
-        fi
-    fi
 
     source .env
     img="sharpbot-discord"
