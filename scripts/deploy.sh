@@ -92,7 +92,6 @@ else
 
     $SUDO docker-compose down
     $SUDO docker-compose up -d
-    $SUDO docker-compose logs -f
 fi
 
 

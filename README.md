@@ -81,15 +81,19 @@ Maintainers and Developers
 All Supported Env Vars
 ========================
 
-```console
+```go
+// Required
 SECRET=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+RESTART=no
+
+// Not Required
 NO_DOCKER=FALSE
+USE_DOCKERHUB=TRUE
 RethinkDB=location/of/rethink/install
 DEVMODE=TRUE
 CICD=TRUE
-DOCKERU=docker_username
-DOCKERP=docker_password
-USE_DOCKERHUB=TRUE
+DOCKERU=<docker_username>
+DOCKERP=<docker_password>
 SKIPBUILD=TRUE
 ```
 
