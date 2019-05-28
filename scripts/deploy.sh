@@ -23,6 +23,7 @@ if [[ $NO_DOCKER == "TRUE" ]]; then
     start $RethinkDB
     cd project
     pipenv run "py -3.7" -u run.py
+    fi
 else
     # Docker Install
     $SUDO docker system prune -f
@@ -93,6 +94,3 @@ else
     $SUDO docker-compose down
     $SUDO docker-compose up -d
 fi
-
-
-
