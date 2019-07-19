@@ -2,7 +2,6 @@ import yaml
 from pprint import pformat
 
 import discord
-import ptvsd
 from discord.ext import commands
 
 from bot.constants import YML_FILE, COGS_FILE
@@ -158,14 +157,6 @@ class OwnerCommands(commands.Cog):
         embed = await create_embed(ctx, title, text)
         embed.set_thumbnail(url=data.avatar_url)
         await ctx.send(embed=embed)
-
-    @commands.command(hidden=True)
-    @commands.check(is_owner)
-    async def debug(self, ctx):
-        await ctx.send("`Waiting for debug attach...`")
-        ptvsd.enable_attach(address=("0.0.0.0", 3000))
-        ptvsd.wait_for_attach()
-        await ctx.send("`Debugger is attached!`")
 
     @commands.command(hidden=True)
     @commands.check(is_owner)
