@@ -4,19 +4,26 @@ services:
     hostname: "rdb"
     image: rethinkdb:2.3.6
     volumes:
-      - "db_data:/data"
+      - "../rethink_data:/data"
     entrypoint: rethinkdb -n pdrdb -d /data --bind 0.0.0.0 --server-tag default --http-port 28010 --driver-port 28015
+    expose:
+      - "28015"
+    logging:
+        driver: none
 
   sharpbot:
     hostname: "sharpbot"
     image: sharpbot-discord:latest
     volumes:
-      - "/artifacts:/project/bot_testing/artifacts/"
+      - project:/project
+    links:
+      - rdb:rdb
     env_file:
       - ../.env
-    restart: ${RESTART:-no}
-    depends_on:
-      - rdb
 
 volumes:
-  db_data:
+    rdb:
+    sharpbot:
+    project:
+      external:
+        true

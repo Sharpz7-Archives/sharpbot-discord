@@ -82,6 +82,9 @@ jobs:
             source $BASH_ENV
             cd ${CIRCLE_PROJECT_REPONAME}
 
+            docker volume create --name=project
+            docker create -v project:/project --name code alpine:3.8
+            docker cp ./project/. code:/project
             touch .env
             echo "CICD=TRUE" > .env
 
@@ -91,8 +94,12 @@ jobs:
             source $BASH_ENV
             cd ${CIRCLE_PROJECT_REPONAME}
 
-            mkdir /artifacts
             docker-compose -f ".circleci/docker-compose.yml" up --abort-on-container-exit
+
+      - run:
+          name: "Upload failed artifacts"
+          command: docker cp code:/project/bot_testing/artifacts/. /artifacts
+          when: always
 
       - store_artifacts:
           path: /artifacts
