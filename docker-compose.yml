@@ -4,7 +4,7 @@ services:
     hostname: "rdb"
     image: rethinkdb:2.3.6
     volumes:
-      - "rethinkdb_data:/data"
+      - "db_data:/data"
     entrypoint: rethinkdb -n pdrdb -d /data --bind 0.0.0.0 --server-tag default --http-port 28010 --driver-port 28015
 
   sharpbot:
@@ -12,11 +12,9 @@ services:
     image: sharpbot-discord:latest
     env_file:
       - .env
-
-    restart: $RESTART
-
+    restart: ${RESTART:-no}
     depends_on:
       - rdb
 
 volumes:
-    rethinkdb_data:
+  db_data:
