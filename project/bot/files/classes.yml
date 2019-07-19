@@ -1,0 +1,315 @@
+mats:
+    Wood:
+        name: Wood
+        rarity: 2
+        emoji: "EVERGREEN TREE"
+        utilities:
+            - chopable
+    Stone:
+        name: Stone
+        rarity: 2
+        emoji: MOYAI
+        utilities:
+            - mineable
+    Coal:
+        name: Coal
+        rarity: 3
+        emoji: FIRE
+        utilities:
+            - mineable
+    Metal:
+        name: Metal
+        rarity: 4
+        emoji: ANCHOR
+        utilities:
+            - mineable
+    Gold:
+        name: Gold
+        rarity: 5
+        emoji: TROPHY
+        utilities:
+            - mineable
+    Diamond:
+        name: Diamond
+        rarity: 6
+        emoji: GEM STONE
+        utilities:
+            - mineable
+
+items:
+    Shield:
+        name: Shield
+        emoji: SHIELD
+        health: 15
+        rarity: 3
+        utilities:
+            - findable
+    Knife:
+        name: Knife
+        emoji: HOCHO
+        damage: 2
+        rarity: 3
+        utilities:
+            - findable
+
+    S-key:
+        name: S-key
+        emoji: OLD KEY
+
+    Fist:
+        name: Fist
+        emoji: FISTED HAND SIGN
+
+    Rod:
+        name: Rod
+        emoji: FISHING POLE AND FISH
+        utilities:
+            - fishing
+            - findable
+
+creatures:
+    Cat:
+        name: Cat
+        emoji: CAT FACE
+        rarity: 3
+        damage: 3
+        health: 10
+        utilities:
+            - findable
+
+    Wolf:
+        name: Wolf
+        emoji: WOLF FACE
+        rarity: 4
+        damage: 5
+        health: 10
+        utilities:
+            - findable
+
+    Snake:
+        name: Snake
+        emoji: SNAKE
+        rarity: 6
+        damage: 2
+        health: 10
+        utilities:
+            - findable
+
+    Salmon:
+        name: Salmon
+        emoji: FISH
+        rarity: 3
+        utilities:
+            - fish
+            - food
+
+plants:
+    Acorn:
+        name: Acorn
+        emoji: CHESTNUT
+        rarity: 2
+        level_up_boost: 1
+
+boats:
+    Rowboat:
+        name: Rowboat
+        emoji: ROWBOAT
+        speed: 1
+
+building:
+    Shack:
+        name: Shack
+        emoji: TENT
+        hp: 500
+        mat: Wood
+
+    House:
+        name: House
+        emoji: DERELICT HOUSE BUILDING
+        hp: 300
+        mat: Stone
+
+    Castle:
+        name: Castle
+        emoji: EUROPEAN CASTLE
+        hp: 50
+        mat: Gold
+
+    Shrine:
+        name: Shrine
+        emoji: JAPANESE CASTLE
+        hp: 50
+        mat: Diamond
+
+trades:
+    wood_metal:
+        selling:
+            - [Wood, 5]
+        buying: [Metal, 1]
+        category: Lumberjack
+
+    diamond_wood:
+        selling:
+            - [Diamond, 1]
+        buying: [Wood, 50]
+        category: Lumberjack
+
+    gold_wood:
+        selling:
+            - [Gold, 1]
+        buying: [Wood, 50]
+        category: Lumberjack
+
+    stone_coal:
+        selling:
+            - [Stone, 2]
+        buying: [Coal, 1]
+        category: Miner
+
+    metal_gold:
+        selling:
+            - [Metal, 6]
+        buying: [Gold, 1]
+
+    metal_diamond:
+        selling:
+            - [Metal, 10]
+        buying: [Diamond, 1]
+
+    diamond_s-key:
+        selling:
+            - [Diamond, 100]
+        buying: [S-key, 1]
+        category: Event
+
+    gold_shield:
+        selling:
+            - [Gold, 50]
+        buying: [Shield, 1]
+        category: Blacksmiths
+
+    metal_knife:
+        selling:
+            - [Metal, 150]
+        buying: [Knife, 1]
+        category: Blacksmiths
+
+    wood_rowboat:
+        selling:
+            - [Wood, 200]
+        buying: [Rowboat, 1]
+        category: Sailor
+
+    gold_rod:
+        selling:
+            - [Gold, 20]
+        buying: [Rod, 1]
+        category: Fisherman
+
+    wood_stone_knife:
+        selling:
+            - [Wood, 100]
+            - [Stone, 50]
+        buying: [Knife, 1]
+        category: Craft
+
+    knife_metal_knife:
+        selling:
+            - [Knife, 1]
+            - [Metal, 50]
+        buying: [Knife, 2]
+        category: Craft
+
+    stone_metal_shield:
+        selling:
+            - [Stone, 100]
+            - [Metal, 50]
+        buying: [Shield, 1]
+        category: Craft
+
+    stone_metal_shield_upgrade:
+        selling:
+            - [Shield, 1]
+            - [Metal, 70]
+        buying: [Shield, 2]
+        category: Craft
+
+places:
+    Python Palace:
+        name: Python Palace
+        coords:
+            - 630
+            - 320
+        typev: CLASSICAL BUILDING
+
+    Ruby Rivet:
+        name: Ruby Rivet
+        coords:
+            - 940
+            - 520
+        typev: CLASSICAL BUILDING
+        trade_name: Miner
+
+    Gopher's Grove:
+        name: Gopher's Grove
+        coords:
+            - 100
+            - 400
+        typev: CLASSICAL BUILDING
+
+    Haskell's Hunts:
+        name: Haskell's Hunts
+        coords:
+            - 100
+            - 160
+        typev: CLASSICAL BUILDING
+        trade_name: Lumberjacks
+
+    Scratches Swamp:
+        name: Scratches Swamp
+        coords:
+            - 350
+            - 480
+        typev: CLASSICAL BUILDING
+        trade_name: Sailor
+
+    Hash Harbour:
+        name: Hash Harbour
+        coords:
+            - 360
+            - 660
+        typev: CLASSICAL BUILDING
+        trade_name: Sailor
+
+    Monty Mountains:
+        name: Monty Mountains
+        coords:
+            - 1000
+            - 680
+        typev: CLASSICAL BUILDING
+        trade_name: Blacksmiths
+
+    Pointer Peaks:
+        name: Pointer Peaks
+        coords:
+            - 875
+            - 180
+        typev: MOUNTAIN
+
+    Java Jets:
+        name: Java Jets
+        coords:
+            - 660
+            - 650
+        typev: WATER WAVE
+        trade_name: Fisherman
+
+    Lava Lake:
+        name: Lava Lake
+        coords:
+            - 540
+            - 110
+        typev: WATER WAVE
+        trade_name: Fisherman
+
+

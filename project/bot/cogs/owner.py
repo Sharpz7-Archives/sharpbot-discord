@@ -1,6 +1,4 @@
 import yaml
-import os
-import sys
 from pprint import pformat
 
 import discord
@@ -195,21 +193,18 @@ class OwnerCommands(commands.Cog):
 
     @commands.command(hidden=True)
     @commands.check(is_owner)
-    async def restart(self, ctx, option=None):
+    async def restart(self, ctx):
         """
         Reloads all of the bot's code!
 
-        If you want a non-docker restart, do /restart local
+        Only for Production setups!!
         """
 
         data = self.load(YML_FILE)
         data["startup_channel"] = ctx.channel.id
         self.write(data, YML_FILE)
         await ctx.send("`restarting...`")
-        if option == "local":
-            os.execl(sys.executable, sys.executable, "-u", *sys.argv)
-        else:
-            exit(0)
+        exit(0)
 
     @commands.command(name="test", hidden=True)
     @commands.check(is_owner)
