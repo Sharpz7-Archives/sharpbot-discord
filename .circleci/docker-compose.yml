@@ -3,21 +3,23 @@ services:
   rdb:
     hostname: "rdb"
     image: rethinkdb:2.3.6
+    volumes:
+      - "../rethink_data:/data"
     entrypoint: rethinkdb -n pdrdb -d /data --bind 0.0.0.0 --server-tag default --http-port 28010 --driver-port 28015
 
   sharpbot:
     hostname: "sharpbot"
-    image: sharp6292/sharpbot-discord:${BRANCH:-master}
+    image: sharpbot-discord:latest
     volumes:
-      - "artifacts:/project/bot_testing/artifacts/"
-    environment:
-      - SECRET=${SECRET:-XXX}
-      - DEVMODE=${DEVMODE:-TRUE}
-      - CICD=${CICD:-FALSE}
-    restart: ${RESTART:-no}
+      - project:/project
     depends_on:
-      - rdb
+      - rdb:rdb
+    env_file:
+      - ../.env
 
 volumes:
-  artifacts:
-    external: true
+    rdb:
+    sharpbot:
+    project:
+      external:
+        true
