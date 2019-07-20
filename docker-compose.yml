@@ -9,9 +9,11 @@ services:
 
   sharpbot:
     hostname: "sharpbot"
-    image: sharpbot-discord:latest
-    env_file:
-      - .env
+    image: sharp6292/sharpbot-discord:${BRANCH:-master}
+    environment:
+      - SECRET=${SECRET:-XXX}
+      - DEVMODE=${DEVMODE:-TRUE}
+      - CICD=${CICD:-FALSE}
     restart: ${RESTART:-no}
     depends_on:
       - rdb
