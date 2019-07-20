@@ -7,7 +7,7 @@ services:
 
   sharpbot:
     hostname: "sharpbot"
-    image: sharpbot-discord:${BRANCH:-master}
+    image: sharp6292/sharpbot-discord:${BRANCH:-master}
     volumes:
       - project:/project
     depends_on:

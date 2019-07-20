@@ -76,6 +76,8 @@ jobs:
           name: "Run tests"
           command: |
             cd ${CIRCLE_PROJECT_REPONAME}
+
+            BRANCH="internal-docker-image"
             docker-compose -f ".circleci/docker-compose.yml" up --abort-on-container-exit
 
       - run:
