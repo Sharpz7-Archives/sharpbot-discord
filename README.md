@@ -78,22 +78,3 @@ Maintainers and Developers
 
 -   issuemeaname / [@issuemeaname](https://github.com/issuemeaname)
 
-All Supported Env Vars
-========================
-
-```go
-// Required
-SECRET=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-RESTART=no
-
-// Not Required
-NO_DOCKER=FALSE
-USE_DOCKERHUB=TRUE
-RethinkDB=location/of/rethink/install
-DEVMODE=TRUE
-CICD=TRUE
-DOCKERU=<docker_username>
-DOCKERP=<docker_password>
-SKIPBUILD=TRUE
-```
-

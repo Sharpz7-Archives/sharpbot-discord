@@ -82,10 +82,8 @@ jobs:
             source $BASH_ENV
             cd ${CIRCLE_PROJECT_REPONAME}
 
-            docker volume create --name=project
-            docker create -v project:/project --name code alpine:3.8
-            docker cp ./project/. code:/project
-            touch .env
+            docker volume create --name=artifacts
+            docker create -v artifacts:/project/bot_testing/artifacts/ --name code alpine:3.8
             echo "CICD=TRUE" > .env
 
       - run:
