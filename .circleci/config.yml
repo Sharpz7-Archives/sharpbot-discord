@@ -61,39 +61,21 @@ jobs:
       - run:
           name: "Setup dependencies"
           command: |
-            echo export BRANCH="${CIRCLE_BRANCH}" |sed 's#/#\-#g' >> $BASH_ENV
-            source $BASH_ENV
-            echo 'export IMAGE_TAG="${CIRCLE_PROJECT_REPONAME}:${BRANCH}"' >> $BASH_ENV
-            echo 'export IMAGE_TAG_CLOUD="${DOCKER_USER}/${IMAGE_TAG}"' >> $BASH_ENV
-
             git clone -b ${CIRCLE_BRANCH} https://github.com/Sharpz7/sharpbot-discord.git
-
-      - run:
-          name: "Docker pull"
-          command: |
-            source $BASH_ENV
-            docker login -u $DOCKER_USER -p $DOCKER_PASS
-            docker pull ${IMAGE_TAG_CLOUD}
-            docker tag ${IMAGE_TAG_CLOUD} ${CIRCLE_PROJECT_REPONAME}:latest
 
       - run:
           name: "Prepare docker-compose"
           command: |
-            source $BASH_ENV
             cd ${CIRCLE_PROJECT_REPONAME}
 
             docker volume create --name=project
             docker create -v project:/project --name code alpine:3.8
             docker cp ./project/. code:/project
-            touch .env
-            echo "CICD=TRUE" > .env
 
       - run:
           name: "Run tests"
           command: |
-            source $BASH_ENV
             cd ${CIRCLE_PROJECT_REPONAME}
-
             docker-compose -f ".circleci/docker-compose.yml" up --abort-on-container-exit
 
       - run:
