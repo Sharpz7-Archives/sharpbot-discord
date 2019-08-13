@@ -10,10 +10,12 @@ jobs:
 
   build:
     docker:
-      - image: docker:18-git
+      - image: docker:19.03
 
     steps:
       - setup_remote_docker
+
+      - checkout
 
       - run:
           name: "Setup dependencies"
@@ -22,8 +24,6 @@ jobs:
             source $BASH_ENV
             echo 'export IMAGE_TAG="${CIRCLE_PROJECT_REPONAME}:${BRANCH}"' >> $BASH_ENV
             echo 'export IMAGE_TAG_CLOUD="${DOCKER_USER}/${IMAGE_TAG}"' >> $BASH_ENV
-
-            git clone -b ${CIRCLE_BRANCH} https://github.com/Sharpz7/sharpbot-discord.git
 
       - run:
           name: "Docker pull"
@@ -41,7 +41,6 @@ jobs:
           name: "Docker build"
           command: |
             source $BASH_ENV
-            cd sharpbot-discord
             docker build --cache-from ${IMAGE_TAG} -f "Dockerfile" -t ${IMAGE_TAG} .
             docker tag ${IMAGE_TAG} $IMAGE_TAG_CLOUD
 
@@ -58,15 +57,11 @@ jobs:
     steps:
       - setup_remote_docker
 
-      - run:
-          name: "Setup dependencies"
-          command: |
-            git clone -b ${CIRCLE_BRANCH} https://github.com/Sharpz7/sharpbot-discord.git
+      - checkout
 
       - run:
           name: "Prepare docker-compose"
           command: |
-            cd ${CIRCLE_PROJECT_REPONAME}
 
             docker volume create --name=project
             docker create -v project:/project --name code alpine:3.8
@@ -75,7 +70,6 @@ jobs:
       - run:
           name: "Run tests"
           command: |
-            cd ${CIRCLE_PROJECT_REPONAME}
 
             BRANCH="internal-docker-image"
             docker-compose -f ".circleci/docker-compose.yml" up --abort-on-container-exit
