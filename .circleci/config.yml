@@ -79,8 +79,6 @@ jobs:
       - image: docker:19.03
 
     steps:
-      - setup_remote_docker
-
       - checkout
 
       - attach_workspace:
@@ -89,12 +87,14 @@ jobs:
       - run:
           name: "Setup"
           command: |
+            echo 'export IMAGE_TAG="${CIRCLE_PROJECT_REPONAME}:latest"' >> $BASH_ENV
+            echo 'export IMAGE_TAG_CLOUD="${DOCKER_USER}/${IMAGE_TAG}"' >> $BASH_ENV
             cd workspace
             docker login -u $DOCKER_USER -p $DOCKER_PASS
             docker load --input ${CIRCLE_PROJECT_REPONAME}.tar
 
       - run:
-          name: "Docker Save"
+          name: "Release"
           command: |
             source $BASH_ENV
             docker push ${IMAGE_TAG_CLOUD}
