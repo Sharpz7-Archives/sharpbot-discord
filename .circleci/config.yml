@@ -20,15 +20,14 @@ jobs:
           name: "Prepare Tests"
           command: |
             pip install pipenv
-            pipenv install --system
+            pipenv install
             echo "CICD=TRUE" > .env
-            echo "CICD=TRUE" >> .env
 
       - run:
           name: "Run Tests"
           command: |
             cd project
-            python -u run.py
+            pipenv run python run.py
 
       - store_artifacts:
           path: ./project/bot_testing/artifacts
@@ -66,7 +65,8 @@ jobs:
       - run:
           name: "Docker Save"
           command: |
-            docker save ${IMAGE_TAG_CLOUD} > ${CIRCLE_PROJECT_REPONAME}.tar
+            source $BASH_ENV
+            docker save --output ${CIRCLE_PROJECT_REPONAME}.tar ${IMAGE_TAG_CLOUD}
             cp ${CIRCLE_PROJECT_REPONAME}.tar ./workspace/${CIRCLE_PROJECT_REPONAME}.tar
 
       - persist_to_workspace:
