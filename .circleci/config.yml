@@ -19,6 +19,7 @@ jobs:
       - run:
           name: "Prepare Tests"
           command: |
+            pip install pipenv
             pipenv install --system
             echo "CICD=TRUE" > .env
 
@@ -53,7 +54,7 @@ jobs:
           name: "Docker pull"
           command: |
             source $BASH_ENV
-            docker pull ${IMAGE_TAG_CLOUD}
+            docker pull ${IMAGE_TAG_CLOUD} || true
 
       - run:
           name: "Docker build"
