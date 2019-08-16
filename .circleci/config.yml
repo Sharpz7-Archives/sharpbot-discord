@@ -105,17 +105,10 @@ workflows:
 
       - tests
 
-      - build:
-          filters:
-              branches:
-                only: master
+      - build
 
       - release:
           requires:
             - lint
-            - test
+            - tests
             - build
-
-          filters:
-            branches:
-              only: master
