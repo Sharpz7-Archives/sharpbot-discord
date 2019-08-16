@@ -317,10 +317,10 @@ class RGB:
 rgb_data = RGB()
 
 # Checks if user does not want to use docker.
-if os.environ.get("NO_DOCKER", "FALSE") == "TRUE":
-    conn_name = "localhost"
-else:
+if os.environ.get("DOCKER", "FALSE") == "TRUE":
     conn_name = "rdb"
+else:
+    conn_name = "localhost"
 
 # Startup Checks
 

@@ -22,6 +22,7 @@ jobs:
             pip install pipenv
             pipenv install --system
             echo "CICD=TRUE" > .env
+            echo "CICD=TRUE" >> .env
 
       - run:
           name: "Run Tests"
@@ -65,7 +66,7 @@ jobs:
       - run:
           name: "Docker Save"
           command: |
-            docker save --output ${CIRCLE_PROJECT_REPONAME}.tar ${IMAGE_TAG_CLOUD}
+            docker save ${IMAGE_TAG_CLOUD} > ${CIRCLE_PROJECT_REPONAME}.tar
             cp ${CIRCLE_PROJECT_REPONAME}.tar ./workspace/${CIRCLE_PROJECT_REPONAME}.tar
 
       - persist_to_workspace:
