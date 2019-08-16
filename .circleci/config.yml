@@ -8,6 +8,30 @@ jobs:
       - run: pip install flake8
       - run: python -m flake8
 
+  tests:
+    docker:
+      - image: python:3.7.3-slim-stretch
+      - image: rethinkdb:2.3.6
+
+    steps:
+      - checkout
+
+      - run:
+          name: "Prepare Tests"
+          command: |
+            pipenv install --system
+            echo "CICD=TRUE" > .env
+
+      - run:
+          name: "Run Tests"
+          command: |
+            cd project
+            python -u run.py
+
+      - store_artifacts:
+          path: ./project/bot_testing/artifacts
+          destination: artifacts
+
   build:
     docker:
       - image: docker:19.03
@@ -18,70 +42,60 @@ jobs:
       - checkout
 
       - run:
-          name: "Setup dependencies"
+          name: "Setup"
           command: |
-            echo export BRANCH="${CIRCLE_BRANCH}" |sed 's#/#\-#g' >> $BASH_ENV
-            source $BASH_ENV
-            echo 'export IMAGE_TAG="${CIRCLE_PROJECT_REPONAME}:${BRANCH}"' >> $BASH_ENV
+            echo 'export IMAGE_TAG="${CIRCLE_PROJECT_REPONAME}:latest"' >> $BASH_ENV
             echo 'export IMAGE_TAG_CLOUD="${DOCKER_USER}/${IMAGE_TAG}"' >> $BASH_ENV
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            mkdir workspace
 
       - run:
           name: "Docker pull"
           command: |
             source $BASH_ENV
-            docker login -u $DOCKER_USER -p $DOCKER_PASS
-            if docker pull ${IMAGE_TAG_CLOUD} ; then
-              docker tag ${IMAGE_TAG_CLOUD} ${IMAGE_TAG}
-            else
-              docker pull ${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:master
-              docker tag ${DOCKER_USER}/${CIRCLE_PROJECT_REPONAME}:master ${IMAGE_TAG}
-            fi
+            docker pull ${IMAGE_TAG_CLOUD}
 
       - run:
           name: "Docker build"
           command: |
             source $BASH_ENV
-            docker build --cache-from ${IMAGE_TAG} -f "Dockerfile" -t ${IMAGE_TAG} .
-            docker tag ${IMAGE_TAG} $IMAGE_TAG_CLOUD
+            docker build --cache-from ${IMAGE_TAG_CLOUD} -f "Dockerfile" -t ${IMAGE_TAG_CLOUD} .
 
       - run:
-          name: "Docker Push"
+          name: "Docker Save"
           command: |
-            source $BASH_ENV
-            docker push ${IMAGE_TAG_CLOUD}
+            docker save --output ${CIRCLE_PROJECT_REPONAME}.tar ${IMAGE_TAG_CLOUD}
+            cp ${CIRCLE_PROJECT_REPONAME}.tar ./workspace/${CIRCLE_PROJECT_REPONAME}.tar
 
-  tests:
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./workspace
+
+  release:
     docker:
-      - image: sharp6292/docker-compose:latest
+      - image: docker:19.03
 
     steps:
       - setup_remote_docker
 
       - checkout
 
+      - attach_workspace:
+          at: .
+
       - run:
-          name: "Prepare docker-compose"
+          name: "Setup"
           command: |
-
-            docker volume create --name=project
-            docker create -v project:/project --name code alpine:3.8
-            docker cp ./project/. code:/project
+            cd workspace
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker load --input ${CIRCLE_PROJECT_REPONAME}.tar
 
       - run:
-          name: "Run tests"
+          name: "Docker Save"
           command: |
-
-            BRANCH="internal-docker-image"
-            docker-compose -f ".circleci/docker-compose.yml" up --abort-on-container-exit
-
-      - run:
-          name: "Upload failed artifacts"
-          command: docker cp code:/project/bot_testing/artifacts/. /artifacts
-          when: always
-
-      - store_artifacts:
-          path: /artifacts
-          destination: artifacts
+            source $BASH_ENV
+            docker push ${IMAGE_TAG_CLOUD}
 
 workflows:
   version: 2
@@ -89,8 +103,19 @@ workflows:
     jobs:
       - lint
 
-      - build
+      - tests
 
-      - tests:
+      - build:
+          filters:
+              branches:
+                only: master
+
+      - release:
           requires:
-           - build
+            - lint
+            - test
+            - build
+
+          filters:
+            branches:
+              only: master

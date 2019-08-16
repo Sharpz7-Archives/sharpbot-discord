@@ -9,7 +9,7 @@ services:
 
   sharpbot:
     hostname: "sharpbot"
-    image: sharp6292/sharpbot-discord:${BRANCH:-master}
+    image: sharp6292/sharpbot-discord:latest
     environment:
       - SECRET=${SECRET:-XXX}
       - DEVMODE=${DEVMODE:-TRUE}
