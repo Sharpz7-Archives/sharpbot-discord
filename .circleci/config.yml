@@ -10,16 +10,22 @@ jobs:
 
   tests:
     docker:
-      - image: python:3.7.3-slim-stretch
+      - image: sharp6292/ci-pipenv
       - image: rethinkdb:2.3.6
 
     steps:
       - checkout
 
+      - restore_cache:
+          keys:
+            # when lock file changes, use increasingly general patterns to restore cache
+            - pip-packages-v1-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+            - pip-packages-v1-{{ .Branch }}-
+            - pip-packages-v1-
+
       - run:
           name: "Prepare Tests"
           command: |
-            pip install pipenv
             pipenv install
             echo "CICD=TRUE" > .env
 
@@ -28,6 +34,11 @@ jobs:
           command: |
             cd project
             pipenv run python run.py
+
+      - save_cache:
+          paths:
+            - ~/.local/share/virtualenvs/venv  # this path depends on where pipenv creates a virtualenv
+          key: pip-packages-v1-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
 
       - store_artifacts:
           path: ./project/bot_testing/artifacts
