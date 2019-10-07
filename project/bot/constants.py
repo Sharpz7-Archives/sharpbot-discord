@@ -14,9 +14,9 @@ TEMPLATE_FILE = (p / "bot" / "files" / "template.png").as_posix()
 FONT_FILE = (p / "bot" / "files" / "celtichand.ttf").as_posix()
 SHORE_FILE = (p / "bot" / "files" / "shore.png").as_posix()
 CLASSES_FILE = (p / "bot" / "files" / "classes.yml").as_posix()
-DEFAULT_CLASSES_FILE = (p / "bot" / "files" / "classes.default.yml").as_posix()
+CICD_CLASSES_FILE = (p / "bot" / "files" / "classes.cicd.yml").as_posix()
 GCONSTANTS_FILE = (p / "bot" / "files" / "constants.yml").as_posix()
-DEFAULT_GCONSTANTS_FILE = (p / "bot" / "files" / "constants.default.yml").as_posix()
+CICD_GCONSTANTS_FILE = (p / "bot" / "files" / "constants.cicd.yml").as_posix()
 ARTIFACT_FOLDER = (p / "bot_testing" / "artifacts").as_posix()
 
 CLANS = ["Clan Tiene", "Clan Uisge", "Clan Ogsaidean", "Clan Talamh"]
@@ -61,11 +61,11 @@ try:
         data = yaml.safe_load(f)
 
 except FileNotFoundError:
-    with open(DEFAULT_GCONSTANTS_FILE, "r") as f:
+    with open(CICD_GCONSTANTS_FILE, "r") as f:
         data = yaml.safe_load(f)
 
 if os.environ.get("CICD", "FALSE") == "TRUE":
-    with open(DEFAULT_GCONSTANTS_FILE, "r") as f:
+    with open(CICD_GCONSTANTS_FILE, "r") as f:
         data = yaml.safe_load(f)
 
 # All constants required by the game
