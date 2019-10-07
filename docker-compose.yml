@@ -15,7 +15,7 @@ services:
       - DEVMODE=${DEVMODE:-TRUE}
       - CICD=${CICD:-FALSE}
       - DOCKER=TRUE
-    restart: ${RESTART:-yes}
+    restart: ${RESTART:-always}
     depends_on:
       - rdb
 
