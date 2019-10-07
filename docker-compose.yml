@@ -14,7 +14,8 @@ services:
       - SECRET=${SECRET:-XXX}
       - DEVMODE=${DEVMODE:-TRUE}
       - CICD=${CICD:-FALSE}
-    restart: ${RESTART:-no}
+      - DOCKER=TRUE
+    restart: ${RESTART:-yes}
     depends_on:
       - rdb
 
