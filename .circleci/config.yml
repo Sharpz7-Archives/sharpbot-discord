@@ -128,6 +128,7 @@ jobs:
       - run:
           name: "Sharpops Deploy"
           command: |
+            ls -a
             sharpops --pass "${SHARPOPS_SECRET}"
 
 workflows:
