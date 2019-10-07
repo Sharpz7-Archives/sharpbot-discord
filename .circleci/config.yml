@@ -112,14 +112,30 @@ jobs:
             source $BASH_ENV
             docker push ${IMAGE_TAG_CLOUD}
 
+  deploy:
+    docker:
+      - image: sharp6292/ci-sharpops:0.3.0a
+
+    steps:
+      - checkout
+
+      - run:
+          name: "Setup Env"
+          command: |
+            echo "SECRET=${SECRET}" > .env
+            echo "RESTART=${RESTART}" >> .env
+
+      - run:
+          name: "Sharpops Deploy"
+          command: |
+            sharpops --pass "${SHARPOPS_SECRET}"
+
 workflows:
   version: 2
   workflow:
     jobs:
       - lint
-
       - tests
-
       - build
 
       - release:
@@ -127,3 +143,13 @@ workflows:
             - lint
             - tests
             - build
+          filters:
+            branches:
+              only: internal/docker-image
+
+      - deploy:
+          requires:
+            - release
+          filters:
+            branches:
+              only: internal/docker-image
