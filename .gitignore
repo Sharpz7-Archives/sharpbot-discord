@@ -1,5 +1,4 @@
 /.vscode
-.sharpops.ini
 /project/bot/__pycache__
 /project/bot/cogs/__pycache__
 /project/bot/database/__pycache__
